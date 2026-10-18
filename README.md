@@ -45,6 +45,14 @@ O pacote para download contém o resultado do processamento em `dist/`. No repos
 | `docs/` | Painel publicado, fontes, cobertura e decisões analíticas |
 | `tests/` | Integridade de chaves, zeros, eleição e período dos pagamentos |
 
+## Explorar o painel
+
+Cada seção possui **Expandir / Recolher**. **Recolher todas** compacta a página; as escolhas ficam salvas apenas no navegador. O mapa abre automaticamente os locais e seções do município escolhido.
+
+Nas emendas, os títulos das colunas ordenam a tabela. O seletor **Ordenar emendas por** também permite ordenar por beneficiário, código, tipo, situação, competência ou atualização da fonte. Campos numéricos são comparados como números; valores ausentes permanecem ao final em ambas as direções. A ordenação abrange todos os registros do recorte, antes da paginação.
+
+**Emendas e votação por município** cruza os recursos documentados com a eleição e o candidato selecionados. Escolha a medida de recurso, os exercícios e o indicador eleitoral. O gráfico, os coeficientes e o CSV usam os mesmos pares elegíveis de SP. O filtro municipal destaca uma observação e mantém a comparação estadual. Localidades múltiplas e municípios sem valor documentado não recebem zeros artificiais. A destinação estadual, o empenho federal e o pagamento continuam separados. Consulte a metodologia sobre temporalidade, porte municipal e mudanças de cargo antes de interpretar as associações.
+
 ## Fontes
 
 - TSE: https://dadosabertos.tse.jus.br/ — resultados, candidaturas e eleitorado.
@@ -83,7 +91,16 @@ A conferência lê a exportação por município e zona e compara os 645 municí
 
 ```sh
 python -m unittest discover -s tests -v
+node --test tests/analytics.test.cjs
 python -m compileall -q eleitoral
 ```
 
 Os totais por município das três eleições foram reconciliados com a exportação oficial por município e zona: **3.870 comparações candidato–município, sem divergências**. A auditoria por ano guarda essa conferência e o SHA-256 do ZIP original por seção.
+
+## Desenvolvimento e Git
+
+Crie uma branch a partir de `main`, mantenha alterações relacionadas em commits focados e abra um pull request. O workflow **Verificar código e análise** executa os testes e verifica sintaxe. Após as verificações, integre a branch e publique pelo workflow de Pages. O workflow de publicação é manual, evitando publicar cada commit intermediário.
+
+Os módulos `web/analytics.js` (funções puras), `web/features.js` (ordenação e comparação) e `web/panels.js` (recolhimento) têm responsabilidades separadas. A agregação de recursos é feita em `eleitoral/correlation.py`. O código da interface foi formatado com Prettier 3.9.10. `.editorconfig` e `.gitattributes` padronizam codificação e finais de linha.
+
+Para gerar apenas a página de publicação, sem produzir outro ZIP: `python -m eleitoral.package --github-pages --no-archive`. A versão gerada em `docs/index.html` deve acompanhar as alterações de código no pull request. Os arquivos brutos continuam fora do Git.
