@@ -1,0 +1,179 @@
+[
+  {
+    "id": "resultados-2018",
+    "year": 2018,
+    "family": "resultados",
+    "resources": [
+      {
+        "id": "e1dae37e-c2d6-493c-bf66-437f3788af89",
+        "name": "Votação nominal por município e zona",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2018.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "7f6271bc-555e-47a5-aace-7009dc01c341",
+        "name": "Detalhe da apuração por seção eleitoral",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2018.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "459d3040-12a2-4b59-9d90-31bec1e3e40d",
+        "name": "SP - Votação por seção eleitoral - 2018",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2018_SP.zip",
+        "format": "CSV"
+      }
+    ]
+  },
+  {
+    "id": "eleitorado-2018",
+    "year": 2018,
+    "family": "eleitorado",
+    "resources": [
+      {
+        "id": "368612e7-fa5d-420a-9013-7ee9d1dbd16a",
+        "name": "Eleitorado por local de votação - 2018",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/eleitorado_locais_votacao/eleitorado_local_votacao_2018.zip",
+        "format": "CSV"
+      }
+    ]
+  },
+  {
+    "id": "candidatos-2018",
+    "year": 2018,
+    "family": "candidatos",
+    "resources": [
+      {
+        "id": "d9cb832e-fa52-4b62-8ee3-8d68d5620116",
+        "name": "Candidatos",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2018.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "f6b42d64-74e6-423c-8c6f-c4dac531635a",
+        "name": "Candidatos - Informações complementares",
+        "url": "URL: https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand_complementar/consulta_cand_complementar_2018.zip",
+        "format": "CSV"
+      }
+    ]
+  },
+  {
+    "id": "resultados-2022",
+    "year": 2022,
+    "family": "resultados",
+    "resources": [
+      {
+        "id": "40fdcf49-256a-4c81-87cf-711545bd1528",
+        "name": "Votação nominal por município e zona",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2022.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "9f042e8b-ed41-4b18-a01b-e0613a68d90c",
+        "name": "Detalhe da apuração por seção eleitoral",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2022.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "5c375ecc-9c40-4c75-921c-686a920c150a",
+        "name": "SP - Votação por seção eleitoral - 2022",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2022_SP.zip",
+        "format": "CSV"
+      }
+    ]
+  },
+  {
+    "id": "eleitorado-2022",
+    "year": 2022,
+    "family": "eleitorado",
+    "resources": [
+      {
+        "id": "3b003555-c69f-49cb-9c15-2700279520c7",
+        "name": "Eleitorado por local de votação - 2022",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/eleitorado_locais_votacao/eleitorado_local_votacao_2022.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "3bbe31b0-4b00-4743-95e3-cdae11c45f1a",
+        "name": "Seções Agregadas - 2022",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/secoes_agregadas/secoes_agregadas_2022.zip",
+        "format": "CSV"
+      }
+    ]
+  },
+  {
+    "id": "candidatos-2022",
+    "year": 2022,
+    "family": "candidatos",
+    "resources": [
+      {
+        "id": "435145fd-bc9d-446a-ac9d-273f585a0bb9",
+        "name": "Candidatos",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2022.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "f26933f5-ca6d-4251-a49c-7bc077dbf250",
+        "name": "Candidatos - Informações complementares",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand_complementar/consulta_cand_complementar_2022.zip",
+        "format": "CSV"
+      }
+    ]
+  },
+  {
+    "id": "resultados-2026",
+    "year": 2026,
+    "family": "resultados",
+    "resources": [
+      {
+        "id": "c807b826-21ff-4bcf-97ca-d86482656320",
+        "name": "Votação nominal por município e zona",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "32892c16-6a45-436e-a2d1-0809c31f3898",
+        "name": "Detalhe da apuração por seção eleitoral",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "30378d01-7c4a-43a8-84c8-4fc7499a9efe",
+        "name": "SP - Votação por seção eleitoral - 2026",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_SP.zip",
+        "format": "CSV"
+      }
+    ]
+  },
+  {
+    "id": "eleitorado-2026",
+    "year": 2026,
+    "family": "eleitorado",
+    "resources": [
+      {
+        "id": "300626b4-2b24-4d2e-b4fc-46b569cfffe5",
+        "name": "Eleitorado por local de votação - 2026",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/eleitorado_locais_votacao/eleitorado_local_votacao_2026.zip",
+        "format": "CSV"
+      }
+    ]
+  },
+  {
+    "id": "candidatos-2026",
+    "year": 2026,
+    "family": "candidatos",
+    "resources": [
+      {
+        "id": "7748de82-a23b-47c4-9ec1-35535d945e5b",
+        "name": "Candidatos",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2026.zip",
+        "format": "CSV"
+      },
+      {
+        "id": "d58fc30b-4eea-4286-a330-15511029e00e",
+        "name": "Candidatos - Informações complementares",
+        "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand_complementar/consulta_cand_complementar_2026.zip",
+        "format": "CSV"
+      }
+    ]
+  }
+]
