@@ -1,28 +1,669 @@
 <!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Votação territorial de Enrico Misasi e Reinaldo Alguz em 2018, 2022 e 2026 e emendas de 2019 a 2022, com fontes oficiais.">
-  <title>Território do voto · Misasi & Alguz</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<a class="skip" href="#main">Pular para o conteúdo</a>
-<header><a class="brand" href="#painel"><span class="mark" aria-hidden="true">T<span>V</span></span><span>Território do voto<small>ANÁLISE ELEITORAL · SÃO PAULO</small></span></a><nav aria-label="Navegação principal"><button class="nav active" data-tab="painel">Painel</button><button class="nav" data-tab="relatorio">Relatório</button><button class="nav" data-tab="fontes">Fontes e método</button></nav><span class="edition">2018 / 2022 / 2026</span></header>
-<main id="main">
-  <div class="intro"><div><p class="eyebrow">DADOS PÚBLICOS, LEITURA TERRITORIAL</p><h1>O voto no território.<br><em>Os recursos em perspectiva.</em></h1><p class="lead">Explore a votação de Enrico Misasi e Reinaldo Alguz e acompanhe as destinações de emendas dos exercícios de 2019 a 2022.</p></div><aside class="scope"><span class="dot"></span> FONTES OFICIAIS<strong>Do estado à seção eleitoral</strong><p>Votos, locais de votação e documentação de emendas. A cobertura de cada base está identificada.</p></aside></div>
-  <div id="loading" class="notice" role="status">Carregando as bases verificadas…</div>
-  <section id="painel" class="tab active" aria-label="Painel eleitoral">
-    <div class="filters"><label>Eleição<select id="year"></select></label><label>Candidato<select id="person"><option value="enrico">Enrico Misasi</option><option value="reinaldo">Reinaldo Alguz</option></select></label><label class="grow">Município<select id="municipality"><option value="">Todo o estado</option></select></label><button id="reset" class="secondary">Limpar filtros</button></div>
-    <p id="candidateInfo" class="context"></p>
-    <div class="metrics"><article><span>Votos nominais</span><strong id="votes">—</strong><small id="votesNote">No recorte selecionado</small></article><article><span>Municípios com votos</span><strong id="municipalities">—</strong><small>Distribuição territorial do candidato</small></article><article><span>Seções observadas</span><strong id="sections">—</strong><small>Inclui seções em que recebeu zero voto</small></article><article><span>Participação no cargo</span><strong id="share">—</strong><small>Sobre votos registrados, incluindo brancos e nulos</small></article></div>
-    <div class="grid"><article class="card mapCard"><div class="cardhead"><div><p class="eyebrow">DISTRIBUIÇÃO GEOGRÁFICA</p><h2>Onde estão os votos</h2></div><span class="pill">645 municípios</span></div><p class="muted">Selecione um município no mapa para abrir seus locais e seções.</p><div id="map" class="map" aria-label="Mapa municipal de votação"></div><div class="maplegend"><span>Menos votos</span><i></i><span>Mais votos</span></div><small class="muted">Escala de cor logarítmica de votos nominais. Malha municipal: IBGE. Uma cor indica quantidade, não vitória no município.</small><p id="mapHint" class="context" aria-live="polite"></p></article><article class="card"><div class="cardhead"><div><p class="eyebrow">CONCENTRAÇÃO</p><h2>Maiores votações municipais</h2></div></div><div id="ranking" class="ranking"></div><p class="muted">Classificação por votos nominais do candidato na eleição selecionada.</p></article></div>
-    <article class="card"><div class="cardhead"><div><p class="eyebrow">COMPARAÇÃO ENTRE ELEIÇÕES</p><h2>Trajetória da votação</h2></div><span class="legend"><i class="blue"></i> Enrico <i class="gold"></i> Reinaldo</span></div><div id="timeline" class="timeline"></div><p class="note">Reinaldo disputou deputado estadual em 2018 e 2026 e deputado federal em 2022. A mudança de cargo altera o contexto da comparação. Cada barra identifica o cargo disputado.</p></article>
-    <article class="card" id="detail"><div class="cardhead"><div><p class="eyebrow">DETALHAMENTO ELEITORAL</p><h2 id="detailTitle">Locais e seções de votação</h2></div><button id="exportSections" class="secondary" disabled>Baixar seções CSV</button></div><p id="detailStatus" class="muted" role="status">Selecione um município para carregar o detalhamento.</p><div class="detailFilters"><label>Local de votação<select id="location" disabled><option value="">Todos os locais</option></select></label><label>Buscar seção<input id="sectionSearch" inputmode="numeric" placeholder="Número da seção" disabled></label></div><div class="tablewrap"><table><caption class="sr">Votos por seção no município selecionado</caption><thead><tr><th>Zona / seção</th><th>Local de votação</th><th>Endereço</th><th class="num">Votos</th><th class="num">% registrados</th></tr></thead><tbody id="sectionsBody"></tbody></table></div><div class="pagination"><span id="pageInfo"></span><button id="prev" class="secondary" disabled>Anterior</button><button id="next" class="secondary" disabled>Próxima</button></div></article>
-    <article class="card"><div class="cardhead"><div><p class="eyebrow">EXERCÍCIOS DE 2019 A 2022</p><h2>Destinação e execução de emendas</h2></div><span id="amendmentTag" class="pill">Coleta em andamento</span></div><p id="amendmentCoverage" class="notice"></p><div class="metrics compact"><article><span id="allocatedLabel">Valor destinado documentado</span><strong id="allocated">—</strong><small id="allocatedNote">Somente registros da cobertura informada</small></article><article><span>Pago em 2019–2022</span><strong id="paid">—</strong><small>Exige data ou competência mensal documentada</small></article></div><p class="note">Os filtros de candidato e município também se aplicam às emendas. O ano eleitoral não altera os exercícios, que permanecem 2019–2022. O município do favorecido de um pagamento pode ser diferente do local de aplicação. O valor empenhado federal é uma posição acumulada das emendas do recorte, não o valor autorizado original nem apenas os empenhos realizados até 2022.</p><div class="tablewrap"><table><caption class="sr">Emendas e pagamentos documentados no recorte</caption><thead><tr><th>Exercício / registro</th><th>Município / beneficiário</th><th>Finalidade</th><th class="num">Destinado / empenhado</th><th>Pagamento no período</th><th>Fonte</th></tr></thead><tbody id="amendmentsBody"></tbody></table></div><p class="muted"><a href="data/emendas.csv" download>Baixar todos os registros de emendas e pagamentos (CSV)</a></p></article>
-  </section>
-  <section id="relatorio" class="tab" aria-label="Relatório explicativo"><article class="card report"><div class="cardhead"><div><p class="eyebrow">LEITURA DOS RESULTADOS</p><h2>Relatório exploratório</h2></div><button id="print" class="secondary">Imprimir / salvar PDF</button></div><p class="muted">Atualizado com os dados importados. Escolha candidato e eleição no painel para mudar o recorte.</p><div id="reportContent"></div></article></section>
-  <section id="fontes" class="tab" aria-label="Fontes e metodologia"><article class="card report"><p class="eyebrow">RASTREABILIDADE</p><h2>Fontes, cobertura e método</h2><div id="audit"></div><h3>O que é comparado</h3><p>A identidade do candidato é resolvida por nome civil no cadastro do TSE e pelo identificador de candidatura de cada eleição. O número de urna e o partido são atributos de cada candidatura, não uma identidade permanente.</p><p>A chave de seção contém eleição, turno, município, zona, seção e cargo. Seções com zero voto para o candidato são preservadas quando há registros do cargo naquela seção. A falta de uma base é indicada como pendência, nunca como zero.</p><h3>Participação e comparação temporal</h3><p>A participação apresentada usa todos os votos registrados para o cargo no arquivo por seção, incluindo brancos e nulos. Não é percentual de votos válidos. O local de votação não é tratado como bairro de residência dos eleitores. O mesmo número de seção em anos diferentes não prova continuidade da população ou do local.</p><h3>Emendas: destinação e execução</h3><p>Exercício, destinação, empenho, pagamento, competência mensal e atualização da fonte são campos separados. A exportação federal informa o valor empenhado acumulado na posição da base; o valor autorizado original ainda precisa de outra fonte. A série por favorecido permite selecionar pagamentos pelos meses de 2019–2022, sem inventar uma data diária. No demonstrativo estadual, um status “paga” de 2025 não comprova pagamento em 2019–2022; sem data ou competência, o valor pago nesse período fica não identificado.</p><p>Dados federais e estaduais ficam identificados separadamente. Emendas coletivas só poderão ser atribuídas a um parlamentar se houver vínculo documental. Totais parciais não são apresentados como totais do mandato.</p><h3>Relação entre recursos e votos</h3><p>O cruzamento territorial é descritivo. Recursos destinados a um hospital podem atender vários municípios, e a sede do favorecido pode ser diferente do local de aplicação. Não se atribuem recursos a seções por proximidade nem se interpreta correlação como efeito causal.</p><h3>Fontes oficiais</h3><ul><li><a href="https://dadosabertos.tse.jus.br/" target="_blank" rel="noopener">TSE — resultados, candidaturas e locais</a></li><li><a href="https://portaldatransparencia.gov.br/emendas" target="_blank" rel="noopener">Portal da Transparência federal — emendas e documentos de despesa</a></li><li><a href="https://www.transparencia.sp.gov.br/home/emendasparlamentares" target="_blank" rel="noopener">Portal da Transparência de SP — emendas estaduais</a></li><li><a href="https://www.al.sp.gov.br/leis/orcamento/emendas-impositivas/" target="_blank" rel="noopener">Alesp — emendas apresentadas</a></li><li><a href="https://servicodados.ibge.gov.br/api/docs/malhas?versao=3" target="_blank" rel="noopener">IBGE — malhas e códigos municipais</a></li></ul></article></section>
-  <footer><strong>Território do voto</strong><span>Análise independente de dados públicos · Fontes: TSE, IBGE e portais de transparência.</span><a href="data/votos_municipios.csv" download>Baixar dados municipais</a></footer>
-</main><script src="app.js"></script>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Votação territorial de Enrico Misasi e Reinaldo Alguz em 2018, 2022 e 2026 e emendas de 2019 a 2022, com fontes oficiais."
+    />
+    <title>Território do voto · Misasi &amp; Alguz</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Pular para o conteúdo</a>
+    <header>
+      <a class="brand" href="#painel"
+        ><span class="mark" aria-hidden="true">T<span>V</span></span
+        ><span
+          >Território do voto<small>ANÁLISE ELEITORAL · SÃO PAULO</small></span
+        ></a
+      >
+      <nav aria-label="Navegação principal">
+        <button class="nav active" data-tab="painel">Painel</button
+        ><button class="nav" data-tab="relatorio">Relatório</button
+        ><button class="nav" data-tab="fontes">Fontes e método</button>
+      </nav>
+      <span class="edition">2018 / 2022 / 2026</span>
+    </header>
+    <main id="main">
+      <div class="intro">
+        <div>
+          <p class="eyebrow">DADOS PÚBLICOS, LEITURA TERRITORIAL</p>
+          <h1>
+            O voto no território.<br /><em>Os recursos em perspectiva.</em>
+          </h1>
+          <p class="lead">
+            Explore a votação de Enrico Misasi e Reinaldo Alguz e acompanhe as
+            destinações de emendas dos exercícios de 2019 a 2022.
+          </p>
+        </div>
+        <aside class="scope">
+          <span class="dot"></span> FONTES OFICIAIS<strong
+            >Do estado à seção eleitoral</strong
+          >
+          <p>
+            Votos, locais de votação e documentação de emendas. A cobertura de
+            cada base está identificada.
+          </p>
+        </aside>
+      </div>
+      <div id="loading" class="notice" role="status">
+        Carregando as bases verificadas.
+      </div>
+      <section id="painel" class="tab active" aria-label="Painel eleitoral">
+        <div class="filters">
+          <label for="year">Eleição<select id="year"></select></label>
+          <label for="person"
+            >Candidato<select id="person">
+              <option value="enrico">Enrico Misasi</option>
+              <option value="reinaldo">Reinaldo Alguz</option>
+            </select></label
+          >
+          <label for="municipality" class="grow"
+            >Município<select id="municipality">
+              <option value="">Todo o estado</option>
+            </select></label
+          >
+          <button id="reset" class="secondary">Limpar filtros</button>
+        </div>
+        <p id="candidateInfo" class="context"></p>
+        <div class="panel-toolbar" aria-label="Exibição das seções">
+          <span>Organize sua leitura</span
+          ><button class="secondary" data-panels-action="collapse">
+            Recolher todas</button
+          ><button class="secondary" data-panels-action="expand">
+            Expandir todas
+          </button>
+        </div>
+        <details class="card panel metric-panel" data-panel="metrics" open>
+          <summary class="cardhead">
+            <h2>Indicadores da votação</h2>
+            <span class="panel-state" aria-hidden="true"></span>
+          </summary>
+          <div class="panel-body metrics">
+            <article>
+              <span>Votos nominais</span><strong id="votes">—</strong
+              ><small id="votesNote">No recorte selecionado</small>
+            </article>
+            <article>
+              <span>Municípios com votos</span
+              ><strong id="municipalities">—</strong
+              ><small>Distribuição territorial do candidato</small>
+            </article>
+            <article>
+              <span>Seções observadas</span><strong id="sections">—</strong
+              ><small>Inclui seções em que recebeu zero voto</small>
+            </article>
+            <article>
+              <span>Participação no cargo</span><strong id="share">—</strong
+              ><small>Sobre votos registrados, incluindo brancos e nulos</small>
+            </article>
+          </div>
+        </details>
+        <div class="grid">
+          <details class="card panel mapCard" data-panel="map" open>
+            <summary class="cardhead">
+              <div>
+                <p class="eyebrow">DISTRIBUIÇÃO GEOGRÁFICA</p>
+                <h2>Onde estão os votos</h2>
+              </div>
+              <span class="panel-state" aria-hidden="true"></span>
+            </summary>
+            <div class="panel-body">
+              <p class="muted">
+                Selecione um dos 645 municípios no mapa para abrir seus locais e
+                seções.
+              </p>
+              <div
+                id="map"
+                class="map"
+                aria-label="Mapa municipal de votação"
+              ></div>
+              <div class="maplegend">
+                <span>Menos votos</span><i></i><span>Mais votos</span>
+              </div>
+              <small class="muted"
+                >Escala de cor logarítmica de votos nominais. Malha municipal:
+                IBGE. Uma cor indica quantidade, não vitória no
+                município.</small
+              >
+              <p id="mapHint" class="context" aria-live="polite"></p>
+            </div>
+          </details>
+          <details class="card panel" data-panel="ranking" open>
+            <summary class="cardhead">
+              <div>
+                <p class="eyebrow">CONCENTRAÇÃO</p>
+                <h2>Maiores votações municipais</h2>
+              </div>
+              <span class="panel-state" aria-hidden="true"></span>
+            </summary>
+            <div class="panel-body">
+              <div id="ranking" class="ranking"></div>
+              <p class="muted">
+                Classificação por votos nominais do candidato na eleição
+                selecionada.
+              </p>
+            </div>
+          </details>
+        </div>
+        <details class="card panel" data-panel="timeline" open>
+          <summary class="cardhead">
+            <div>
+              <p class="eyebrow">COMPARAÇÃO ENTRE ELEIÇÕES</p>
+              <h2>Trajetória da votação</h2>
+            </div>
+            <span class="panel-state" aria-hidden="true"></span>
+          </summary>
+          <div class="panel-body">
+            <p class="legend">
+              <i class="blue"></i> Enrico <i class="gold"></i> Reinaldo
+            </p>
+            <div id="timeline" class="timeline"></div>
+            <p class="note">
+              Reinaldo disputou deputado estadual em 2018 e 2026 e deputado
+              federal em 2022. A mudança de cargo altera o contexto da
+              comparação. Cada barra identifica o cargo disputado.
+            </p>
+          </div>
+        </details>
+        <details class="card panel" id="detail" data-panel="sections">
+          <summary class="cardhead">
+            <div>
+              <p class="eyebrow">DETALHAMENTO ELEITORAL</p>
+              <h2 id="detailTitle">Locais e seções de votação</h2>
+            </div>
+            <span class="panel-state" aria-hidden="true"></span>
+          </summary>
+          <div class="panel-body">
+            <div class="section-actions">
+              <p id="detailStatus" class="muted" role="status">
+                Selecione um município para carregar o detalhamento.
+              </p>
+              <button id="exportSections" class="secondary" disabled>
+                Baixar seções CSV
+              </button>
+            </div>
+            <div class="detailFilters">
+              <label for="location"
+                >Local de votação<select id="location" disabled>
+                  <option value="">Todos os locais</option>
+                </select></label
+              ><label for="sectionSearch"
+                >Buscar seção<input
+                  id="sectionSearch"
+                  inputmode="numeric"
+                  placeholder="Número da seção"
+                  disabled
+              /></label>
+            </div>
+            <div class="tablewrap">
+              <table>
+                <caption class="sr">
+                  Votos por seção no município selecionado
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Zona / seção</th>
+                    <th>Local de votação</th>
+                    <th>Endereço</th>
+                    <th class="num">Votos</th>
+                    <th class="num">% registrados</th>
+                  </tr>
+                </thead>
+                <tbody id="sectionsBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination">
+              <span id="pageInfo"></span
+              ><button id="prev" class="secondary" disabled>Anterior</button
+              ><button id="next" class="secondary" disabled>Próxima</button>
+            </div>
+          </div>
+        </details>
+        <details class="card panel" id="amendments" data-panel="amendments">
+          <summary class="cardhead">
+            <div>
+              <p class="eyebrow">EXERCÍCIOS DE 2019 A 2022</p>
+              <h2>Destinação e execução de emendas</h2>
+            </div>
+            <span class="panel-state" aria-hidden="true"></span>
+          </summary>
+          <div class="panel-body">
+            <p>
+              <span id="amendmentTag" class="pill">Coleta em andamento</span>
+            </p>
+            <p id="amendmentCoverage" class="notice"></p>
+            <div class="metrics compact">
+              <article>
+                <span id="allocatedLabel">Valor destinado documentado</span
+                ><strong id="allocated">—</strong
+                ><small id="allocatedNote"
+                  >Somente registros da cobertura informada</small
+                >
+              </article>
+              <article>
+                <span>Pago em 2019–2022</span><strong id="paid">—</strong
+                ><small>Exige data ou competência mensal documentada</small>
+              </article>
+            </div>
+            <p class="note">
+              Os filtros de candidato e município também se aplicam às emendas.
+              O ano eleitoral não altera os exercícios, que permanecem
+              2019–2022. O município do favorecido de um pagamento pode ser
+              diferente do local de aplicação. O valor empenhado federal é uma
+              posição acumulada das emendas do recorte, não o valor autorizado
+              original nem apenas os empenhos realizados até 2022.
+            </p>
+            <div class="detailFilters sort-controls">
+              <label for="amendmentSort"
+                >Ordenar emendas por<select id="amendmentSort">
+                  <option value="exercise">Exercício</option>
+                  <option value="official_code">Código do registro</option>
+                  <option value="sphere">Esfera</option>
+                  <option value="record_type">Tipo de registro</option>
+                  <option value="municipality">Município</option>
+                  <option value="beneficiary">Beneficiário</option>
+                  <option value="purpose">Finalidade</option>
+                  <option value="resource_value">
+                    Valor destinado / empenhado
+                  </option>
+                  <option value="paid_in_period_brl">
+                    Pagamento no período
+                  </option>
+                  <option value="payment_month">
+                    Competência do pagamento
+                  </option>
+                  <option value="payment_date">Data do pagamento</option>
+                  <option value="status">Situação</option>
+                  <option value="source">Fonte</option>
+                  <option value="source_as_of">Atualização da fonte</option>
+                </select></label
+              >
+              <label for="amendmentDirection"
+                >Direção<select id="amendmentDirection">
+                  <option value="asc">Crescente</option>
+                  <option value="desc">Decrescente</option>
+                </select></label
+              >
+            </div>
+            <p class="muted">
+              Clique também nos títulos das colunas para ordenar. Valores
+              ausentes ficam ao final em ambas as direções.
+            </p>
+            <div class="tablewrap">
+              <table id="amendmentsTable">
+                <caption class="sr">
+                  Emendas e pagamentos documentados no recorte
+                </caption>
+                <thead>
+                  <tr>
+                    <th aria-sort="ascending">
+                      <button
+                        class="sort-button"
+                        data-amendment-sort="exercise"
+                      >
+                        Exercício / registro<span
+                          class="sort-arrow"
+                          aria-hidden="true"
+                        >
+                          ↑</span
+                        >
+                      </button>
+                    </th>
+                    <th aria-sort="none">
+                      <button
+                        class="sort-button"
+                        data-amendment-sort="municipality"
+                      >
+                        Município / beneficiário<span
+                          class="sort-arrow"
+                          aria-hidden="true"
+                        >
+                          ↕</span
+                        >
+                      </button>
+                    </th>
+                    <th aria-sort="none">
+                      <button class="sort-button" data-amendment-sort="purpose">
+                        Finalidade<span class="sort-arrow" aria-hidden="true">
+                          ↕</span
+                        >
+                      </button>
+                    </th>
+                    <th class="num" aria-sort="none">
+                      <button
+                        class="sort-button"
+                        data-amendment-sort="resource_value"
+                      >
+                        Destinado / empenhado<span
+                          class="sort-arrow"
+                          aria-hidden="true"
+                        >
+                          ↕</span
+                        >
+                      </button>
+                    </th>
+                    <th aria-sort="none">
+                      <button
+                        class="sort-button"
+                        data-amendment-sort="paid_in_period_brl"
+                      >
+                        Pagamento no período<span
+                          class="sort-arrow"
+                          aria-hidden="true"
+                        >
+                          ↕</span
+                        >
+                      </button>
+                    </th>
+                    <th aria-sort="none">
+                      <button class="sort-button" data-amendment-sort="source">
+                        Fonte<span class="sort-arrow" aria-hidden="true">
+                          ↕</span
+                        >
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="amendmentsBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination">
+              <span id="amendmentPageInfo" aria-live="polite"></span
+              ><button id="amendmentPrev" class="secondary">
+                Emendas anteriores</button
+              ><button id="amendmentNext" class="secondary">
+                Próximas emendas
+              </button>
+            </div>
+            <p class="muted">
+              <a href="data/emendas.csv" download
+                >Baixar todos os registros de emendas e pagamentos (CSV)</a
+              >
+            </p>
+          </div>
+        </details>
+        <details
+          class="card panel"
+          id="correlation"
+          data-panel="correlation"
+          open
+        >
+          <summary class="cardhead">
+            <div>
+              <p class="eyebrow">ASSOCIAÇÃO TERRITORIAL EXPLORATÓRIA</p>
+              <h2>Emendas e votação por município</h2>
+            </div>
+            <span class="panel-state" aria-hidden="true"></span>
+          </summary>
+          <div class="panel-body">
+            <p class="muted">
+              Compare o candidato e a eleição selecionados no painel. Cada ponto
+              representa um município com valor documentado nas duas variáveis.
+            </p>
+            <div class="comparison-filters">
+              <label for="resourceMeasure"
+                >Medida de recurso<select id="resourceMeasure"></select
+              ></label>
+              <label for="voteMeasure"
+                >Indicador eleitoral<select id="voteMeasure">
+                  <option value="share">
+                    Participação nos votos registrados (%)
+                  </option>
+                  <option value="votes">Votos nominais</option>
+                  <option value="growth">
+                    Variação dos votos desde 2018 (%)
+                  </option>
+                  <option value="delta_share">
+                    Variação da participação desde 2018 (p.p.)
+                  </option>
+                </select></label
+              >
+              <label for="resourceStart"
+                >Exercício inicial<select id="resourceStart">
+                  <option>2019</option>
+                  <option>2020</option>
+                  <option>2021</option>
+                  <option>2022</option>
+                </select></label
+              >
+              <label for="resourceEnd"
+                >Exercício final<select id="resourceEnd">
+                  <option>2019</option>
+                  <option>2020</option>
+                  <option>2021</option>
+                  <option selected>2022</option>
+                </select></label
+              >
+            </div>
+            <p id="correlationCoverage" class="notice" role="status"></p>
+            <div class="metrics correlation-metrics">
+              <article>
+                <span>Municípios comparados</span
+                ><strong id="correlationCount">—</strong
+                ><small>Apenas pares com dados documentados</small>
+              </article>
+              <article>
+                <span>Pearson · associação linear</span
+                ><strong id="pearson">—</strong
+                ><small>De −1 a +1; não mede efeito causal</small>
+              </article>
+              <article>
+                <span>Spearman · associação de ordens</span
+                ><strong id="spearman">—</strong
+                ><small>Empates recebem posição média</small>
+              </article>
+              <article>
+                <span>Recurso nos municípios comparados</span
+                ><strong id="correlationAmount">—</strong
+                ><small>Medida e exercícios selecionados</small>
+              </article>
+            </div>
+            <label class="check-label" for="resourceLog"
+              ><input id="resourceLog" type="checkbox" /> Escala logarítmica de
+              recursos no gráfico</label
+            >
+            <div id="scatter" class="scatter"></div>
+            <p id="correlationHint" class="context" aria-live="polite"></p>
+            <p id="correlationSelection" class="muted"></p>
+            <p class="note">
+              Correlação não demonstra que emendas causaram votos. O porte dos
+              municípios influencia valores absolutos; a opção de participação
+              usa votos registrados para o cargo, incluindo brancos e nulos. A
+              cobertura é parcial, e não se atribuem recursos a seções por
+              proximidade. Os coeficientes usam os valores originais, mesmo com
+              escala logarítmica no gráfico. Não são apresentados testes de
+              significância ou estimativas de efeito.
+            </p>
+            <div class="section-actions">
+              <h3>Municípios incluídos no cálculo</h3>
+              <button id="exportComparison" class="secondary">
+                Baixar comparação CSV
+              </button>
+            </div>
+            <div class="tablewrap comparison-table">
+              <table>
+                <caption class="sr">
+                  Pares municipais usados nos coeficientes e no gráfico
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Município</th>
+                    <th class="num">Recurso documentado</th>
+                    <th id="correlationMetricHeading" class="num">
+                      Indicador eleitoral
+                    </th>
+                    <th class="num">Registros com valor</th>
+                  </tr>
+                </thead>
+                <tbody id="comparisonBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+      </section>
+      <section id="relatorio" class="tab" aria-label="Relatório explicativo">
+        <article class="card report">
+          <div class="cardhead">
+            <div>
+              <p class="eyebrow">LEITURA DOS RESULTADOS</p>
+              <h2>Relatório exploratório</h2>
+            </div>
+            <button id="print" class="secondary">Imprimir / salvar PDF</button>
+          </div>
+          <p class="muted">
+            Atualizado com os dados importados. Escolha candidato e eleição no
+            painel para mudar o recorte.
+          </p>
+          <div id="reportContent"></div>
+        </article>
+      </section>
+      <section id="fontes" class="tab" aria-label="Fontes e metodologia">
+        <article class="card report">
+          <p class="eyebrow">RASTREABILIDADE</p>
+          <h2>Fontes, cobertura e método</h2>
+          <div id="audit"></div>
+          <h3>O que é comparado</h3>
+          <p>
+            A identidade do candidato é resolvida por nome civil no cadastro do
+            TSE e pelo identificador de candidatura de cada eleição. O número de
+            urna e o partido são atributos de cada candidatura, não uma
+            identidade permanente.
+          </p>
+          <p>
+            A chave de seção contém eleição, turno, município, zona, seção e
+            cargo. Seções com zero voto para o candidato são preservadas quando
+            há registros do cargo naquela seção. A falta de uma base é indicada
+            como pendência, nunca como zero.
+          </p>
+          <h3>Participação e comparação temporal</h3>
+          <p>
+            A participação usa todos os votos registrados para o cargo,
+            incluindo brancos e nulos. Não é percentual de votos válidos. O
+            local de votação não representa bairro de residência dos eleitores.
+            O mesmo número de seção em anos diferentes não prova continuidade da
+            população ou do local.
+          </p>
+          <h3>Emendas: destinação e execução</h3>
+          <p>
+            Exercício, destinação, empenho, pagamento, competência mensal e
+            atualização da fonte são campos separados. A exportação federal
+            informa o valor empenhado acumulado; a autorização original ainda
+            precisa de outra fonte. Pagamentos são filtrados pelos meses de
+            2019–2022, sem inventar uma data diária. Um status estadual "paga"
+            de 2025 não comprova pagamento em 2019–2022; sem data ou
+            competência, o pagamento no período fica não identificado.
+          </p>
+          <p>
+            Dados federais e estaduais ficam identificados separadamente.
+            Emendas coletivas só podem ser atribuídas a um parlamentar com
+            vínculo documental. Totais parciais não são totais do mandato.
+          </p>
+          <h3>Correlação entre recursos e votos</h3>
+          <p>
+            A comparação usa municípios explícitos de SP com valores
+            documentados na medida escolhida. Localidades múltiplas, outros
+            estados e nomes sem correspondência são excluídos, com contagem e
+            valor informados. Ausência de registro não vira zero. Recursos não
+            são repartidos entre municípios nem atribuídos a locais ou seções
+            eleitorais.
+          </p>
+          <p>
+            Pearson mede associação linear e Spearman compara as posições das
+            observações, com média em caso de empate. Ambos usam os valores
+            originais de todos os pares elegíveis de SP. O filtro municipal
+            apenas destaca o município; não reduz a amostra a um ponto.
+            Exigem-se ao menos três pares, e variáveis constantes produzem "Não
+            calculável". Não há estimativa causal ou teste de significância. As
+            variações usam 2018 como base e não são calculadas quando faltam
+            dados ou, para variação percentual, quando a base de votos é zero.
+          </p>
+          <p>
+            O porte municipal e a seleção de municípios com documentação
+            influenciam a associação. Em 2018, as eleições antecedem as emendas;
+            o recorte de 2022 inteiro pode incluir registros posteriores ao
+            pleito. O empenho federal é acumulado na posição da fonte.
+            Pagamentos são localizados pelo favorecido, o que não comprova
+            aplicação. Mudanças de cargo devem ser consideradas ao comparar
+            eleições.
+          </p>
+          <p class="muted">
+            Referências das definições:
+            <a
+              href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html"
+              target="_blank"
+              rel="noopener"
+              >Pearson</a
+            >
+            e
+            <a
+              href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html"
+              target="_blank"
+              rel="noopener"
+              >Spearman</a
+            >, documentação SciPy.
+          </p>
+          <h3>Fontes oficiais</h3>
+          <ul>
+            <li>
+              <a
+                href="https://dadosabertos.tse.jus.br/"
+                target="_blank"
+                rel="noopener"
+                >TSE — resultados, candidaturas e locais</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://portaldatransparencia.gov.br/emendas"
+                target="_blank"
+                rel="noopener"
+                >Portal da Transparência federal — emendas e documentos de
+                despesa</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.transparencia.sp.gov.br/home/emendasparlamentares"
+                target="_blank"
+                rel="noopener"
+                >Portal da Transparência de SP — emendas estaduais</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.al.sp.gov.br/leis/orcamento/emendas-impositivas/"
+                target="_blank"
+                rel="noopener"
+                >Alesp — emendas apresentadas</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://servicodados.ibge.gov.br/api/docs/malhas?versao=3"
+                target="_blank"
+                rel="noopener"
+                >IBGE — malhas e códigos municipais</a
+              >
+            </li>
+          </ul>
+        </article>
+      </section>
+      <footer>
+        <strong>Território do voto</strong
+        ><span
+          >Análise independente de dados públicos · Fontes: TSE, IBGE e portais
+          de transparência.</span
+        ><a href="data/votos_municipios.csv" download
+          >Baixar dados municipais</a
+        >
+      </footer>
+    </main>
+    <script src="panels.js"></script>
+    <script src="analytics.js"></script>
+    <script src="features.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
