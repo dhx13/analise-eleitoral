@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+data/raw/
+data/metadata/federal-download.html
+data/processed/
+dist/
+preview.html
+*.zip
+tmp/
