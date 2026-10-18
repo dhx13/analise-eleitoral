@@ -22,8 +22,8 @@ O site contém 602.114 registros candidato–seção, incluindo zeros observados
 
 ## Código e limitações de revisão
 
-Quatro testes automatizados passaram, cobrindo preservação de zeros e do recorte eleitoral, bloqueio de votos duplicados, ausência de base e classificação temporal dos pagamentos (inclusive mês sem dia). A compilação dos módulos Python e a verificação de sintaxe do JavaScript passaram.
+Na versão 0.2.0, dez testes Python e sete testes Node passaram. Cobrem preservação de zeros e do recorte eleitoral, votos duplicados, ausência de base, classificação temporal dos pagamentos, correspondência municipal, exclusão de outras UFs e localidades múltiplas, separação entre principal e parcelas, ordenação numérica com ausentes, empates de postos, variáveis constantes e variações eleitorais sem base definida. A compilação dos módulos Python e a sintaxe de todos os arquivos JavaScript também foram conferidas.
 
-A revisão visual e dos controles no navegador não foi concluída. A prévia HTTP local não pôde ser acessada pelas restrições de rede do ambiente, e a política do navegador bloqueou o protocolo de arquivos locais. Não houve tentativa de contornar essa política. O HTML independente é entregue para revisão pelo usuário; não se afirma que o comportamento em desktop e celular foi validado visualmente.
+A exportação independente foi comparada com o HTML da versão anterior no Git: votos, candidaturas, emendas, geografia e os 1.935 blocos de seções são idênticos. A nova agregação de recursos acrescenta 124 linhas de candidato/exercício/município e contadores de cobertura, sem substituir as bases originais. Os quatro módulos JavaScript e o CSS estão incorporados ao HTML, assim como os CSVs de download.
 
-A publicação no GitHub Pages ainda não foi executada. O repositório e seu nome serão definidos com o usuário. O workflow de publicação é manual e usa o resultado de `dist/`, sem refazer a coleta pesada durante a publicação.
+A publicação usa `docs/index.html` em https://dhx13.github.io/analise-eleitoral/. As alterações passam pela branch `feat/painel-emendas-correlacao`, por pull request e pelo workflow de verificações. O workflow de publicação é manual e usa `docs/`, sem refazer a coleta pesada. A revisão dos controles no site publicado acompanha o pull request; não há alegação de teste em dispositivos móveis físicos.

@@ -12,6 +12,7 @@ from pathlib import Path
 import pandas as pd
 
 from .sources import ROOT, YEARS, acquire
+from .correlation import municipal_resources
 
 PEOPLE = {
     "enrico": "ENRICO VAN BLARCUM DE GRAAFF MISASI",
@@ -217,6 +218,7 @@ def build():
             raise ValueError("Correspondência TSE–IBGE incompleta ou com colisões; revisar antes de gerar o mapa")
     dump(dist / "data" / "dashboard.json", {"title": "Território do voto", "people": people, "summary": summary,
          "audits": audits, "amendments": amendments, "crosswalk": crosswalk,
+         "municipal_resources": municipal_resources(summary, amendments, municipality_name),
          "amendment_coverage": "Base federal importada: empenhos por localidade e pagamentos mensais por favorecido. Base estadual parcial: demonstrativos impositivos de 2020–2022, sem datas de pagamento; 2019 e revisão integral pendentes. Valores autorizados originais ainda não obtidos na esfera federal.",
          "denominator": "Votos registrados para o cargo, incluindo brancos e nulos; não são votos válidos.",
          "scope": {"years": list(YEARS), "amendments": [2019, 2022], "uf": "SP"}})

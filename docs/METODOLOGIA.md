@@ -52,7 +52,19 @@ Os arquivos estaduais de 2020–2022 são demonstrativos de emendas impositivas.
 - Concentração municipal: participação dos maiores municípios nos votos do próprio candidato em SP.
 - Distribuição de votos por zona, local e seção dentro de cada pleito.
 - Destinações e pagamentos documentados por município e beneficiário, com sua cobertura.
-- Associação entre emendas e variação eleitoral somente após completar a base; sem interpretação causal automática e sem imputar recursos a seções por proximidade.
+- Associação exploratória entre recursos e votação no subconjunto municipal documentado, com cobertura e exclusões explícitas; sem interpretação causal e sem imputar recursos a seções por proximidade.
+
+## Comparação municipal de recursos e votação
+
+A versão 0.2 permite comparar a base parcial, sem tratá-la como cobertura completa. A agregação em Python usa município explícito, nome normalizado e UF SP. Para cada candidato e exercício, cada medida permanece separada: destinação estadual, empenho federal acumulado e pagamento ocorrido no período. Valores ausentes permanecem nulos; um zero só entra se estiver documentado na fonte. Parcelas de pagamento não repetem o valor principal da emenda. O painel conta e soma os registros excluídos por município não identificado ou fora de SP.
+
+O conjunto de comparação contém os municípios com recurso documentado na medida e nos exercícios selecionados, além de indicador eleitoral definido na eleição escolhida. Os municípios com recurso, mas sem indicador definido, também são contados como exclusões. O filtro municipal destaca um ponto sem alterar a amostra estadual. O CSV contém exatamente os pares usados no gráfico e nos coeficientes, os filtros e as duas variáveis originais.
+
+Os indicadores disponíveis são votos nominais; participação nos votos registrados para o cargo; variação percentual dos votos desde 2018; e variação da participação em pontos percentuais desde 2018. A variação percentual não é definida com votos zero em 2018, e a variação de participação exige denominadores positivos nos dois anos. Não se calcula variação de 2018 em relação a ele mesmo. Mudanças de cargo são sinalizadas, em especial para Reinaldo em 2022.
+
+Pearson é calculado pela covariância centrada dividida pelo produto das normas centradas. Spearman é o Pearson das posições, com posições médias nos empates. O projeto exige pelo menos três pares para exibir coeficientes; variáveis constantes e dados insuficientes retornam “Não calculável”. Não são calculados valores-p, intervalos de confiança, regressões causais ou estimativas de efeito. A escala logarítmica altera apenas o gráfico; os coeficientes continuam usando valores originais. Referências de definição: [Pearson](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html) e [Spearman](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html), documentação SciPy.
+
+As associações podem refletir porte municipal, composição da amostra documentada e outros fatores. Recursos para hospitais podem atender vários municípios. O município do favorecido de um pagamento federal não prova município de aplicação. O empenho é a posição acumulada da fonte, e não uma execução datada até 2022. O pleito de 2018 antecede as emendas; exercícios e pagamentos de 2022 podem incluir datas posteriores ao pleito. A comparação com 2026 também não controla eventos posteriores ao mandato analisado.
 
 ## Próximas decisões com o usuário
 
