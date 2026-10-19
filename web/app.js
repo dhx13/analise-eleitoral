@@ -386,6 +386,7 @@ function audit() {
   const count = Object.keys(D.crosswalk).length;
   $("#audit").innerHTML =
     checked +
+    CensusPanel.audit(D) +
     `<p class="notice">Emendas: ${esc(D.amendment_coverage)}</p><p class="muted">Correspondências municipais TSE → IBGE: ${count}. A ligação usa nomes normalizados e a UF SP, com verificação de cobertura; os códigos das duas instituições são mantidos separados.</p>`;
 }
 function exportCsv() {
