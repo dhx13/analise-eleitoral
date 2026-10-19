@@ -70,8 +70,8 @@ class SnapshotTests(unittest.TestCase):
             root = Path(directory)
             dist = root / 'dist'
             (dist / 'data/sections/2022').mkdir(parents=True)
-            scripts = ['panels.js', 'analytics.js', 'features.js', 'app.js']
-            html = '<link rel="stylesheet" href="style.css" />' + ''.join(f'<script src="{name}"></script>' for name in scripts)
+            scripts = ['panels.js', 'analytics.js', 'census.js', 'features.js', 'app.js']
+            html = '<link rel="stylesheet" href="style.css" /><a href="data/censos_municipios.csv" download>CSV</a>' + ''.join(f'<script src="{name}"></script>' for name in scripts)
             (dist / 'index.html').write_text(html, encoding='utf-8')
             (dist / 'style.css').write_text('body{margin:0}', encoding='utf-8')
             for name in scripts:
@@ -80,11 +80,15 @@ class SnapshotTests(unittest.TestCase):
             (dist / 'data/municipalities.geojson').write_text('{}', encoding='utf-8')
             (dist / 'data/sections/2022/1.json').write_text('[]', encoding='utf-8')
             (dist / 'data/votos_municipios.csv').write_text('year,votes\n2022,10', encoding='utf-8')
+            (dist / 'data/censos_municipios.csv').write_text('census_year,population\n2022,10', encoding='utf-8')
             with patch.object(packaging, 'ROOT', root):
                 result = packaging.package(github_pages=True, create_archive=False)
             output = (root / 'docs/index.html').read_text(encoding='utf-8')
             self.assertNotIn('<script src=', output)
             self.assertNotIn('href="style.css"', output)
+            self.assertNotIn('href="data/censos_municipios.csv"', output)
+            self.assertIn('download="censos_municipios.csv"', output)
+            self.assertNotIn(b'\r\n', (root / 'docs/index.html').read_bytes())
             self.assertEqual([output.index('marker:' + name) for name in scripts],
                              sorted(output.index('marker:' + name) for name in scripts))
             self.assertIn('<\\/script>', output)

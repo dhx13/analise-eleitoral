@@ -17,6 +17,7 @@ def main():
     check.add_argument("--anos", nargs="+", type=int, choices=YEARS, default=list(YEARS))
     commands.add_parser("coletar-geografia", help="Obter malha e municípios oficiais do IBGE")
     commands.add_parser("coletar-emendas", help="Obter exportação federal e demonstrativos estaduais de 2020–2022")
+    commands.add_parser("coletar-censos", help="Atualizar os recortes municipais oficiais dos Censos 2010 e 2022")
     args = parser.parse_args()
     if args.command == "coletar":
         for year in args.anos:
@@ -36,6 +37,9 @@ def main():
     elif args.command == "coletar-emendas":
         from .collect_auxiliary import amendments
         print(json.dumps(amendments(), ensure_ascii=False))
+    elif args.command == "coletar-censos":
+        from .census import refresh
+        print(json.dumps(refresh(), ensure_ascii=False))
     else:
         print(json.dumps(build(), ensure_ascii=False), flush=True)
 

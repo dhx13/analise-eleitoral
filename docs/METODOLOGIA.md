@@ -66,9 +66,14 @@ Pearson é calculado pela covariância centrada dividida pelo produto das normas
 
 As associações podem refletir porte municipal, composição da amostra documentada e outros fatores. Recursos para hospitais podem atender vários municípios. O município do favorecido de um pagamento federal não prova município de aplicação. O empenho é a posição acumulada da fonte, e não uma execução datada até 2022. O pleito de 2018 antecede as emendas; exercícios e pagamentos de 2022 podem incluir datas posteriores ao pleito. A comparação com 2026 também não controla eventos posteriores ao mandato analisado.
 
+## Contexto socioeconômico
+
+A versão 0.3 integra nove indicadores oficiais dos Censos 2010 e 2022, por código IBGE municipal. A eleição de 2018 usa 2010; 2022 e 2026 usam 2022. O ano de referência permanece explícito e não há interpolação. Perfil, mapa, relatório e comparação municipal usam o mesmo contrato de dados. Consulte [CENSOS.md](CENSOS.md) para tabelas, recortes, denominadores, renda nominal, alterações do questionário e limites geográficos.
+
+A associação com um indicador censitário pode usar todos os municípios com pares definidos, sem exigir que haja emenda documentada. Ao selecionar emendas como variável comparada, volta a exigir recurso documentado no período. A comparação é entre municípios e não permite inferir o perfil individual de eleitores ou efeito causal.
+
 ## Próximas decisões com o usuário
 
-- Conta e repositório para publicação no GitHub Pages.
 - Preferência visual após revisar o protótipo.
 - Interesse em mapas de pontos dos locais, se houver coordenadas oficiais ou geocodificação verificada.
 - Profundidade das análises estatísticas após completar e reconciliar as emendas.

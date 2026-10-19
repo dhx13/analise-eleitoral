@@ -110,24 +110,53 @@ function drawMap(rows, mun, person) {
       '<p class="empty">Malha municipal ainda não importada.</p>';
     return;
   }
-  const max = Math.max(1, ...rows.map((r) => r.votes)),
-    reverse = Object.fromEntries(
-      Object.entries(D.crosswalk).map(([a, b]) => [b, a]),
-    );
+  const measure = $("#mapMeasure").value || "votes",
+    isVote = measure === "votes";
+  const reference = ElectoralAnalytics.censusYear(D.census, selected().year);
+  const reverse = Object.fromEntries(
+    Object.entries(D.crosswalk).map(([a, b]) => [b, a]),
+  );
   const lookup = new Map(rows.map((r) => [D.crosswalk[r.municipality_id], r]));
-  const end = person === "enrico" ? [34, 111, 145] : [174, 122, 28];
+  const profiles = new Map(
+    D.census.rows
+      .filter((r) => r.census_year === reference)
+      .map((r) => [r.ibge_id, r]),
+  );
+  const getValue = (id) =>
+    isVote ? lookup.get(id)?.votes : profiles.get(id)?.[measure];
+  const values = mapPaths.map((p) => getValue(p.id)).filter(Number.isFinite);
+  const max = Math.max(1, ...values),
+    percent = !isVote && D.census.indicators[measure].unit === "percent";
+  const end = isVote
+    ? person === "enrico"
+      ? [34, 111, 145]
+      : [174, 122, 28]
+    : [26, 115, 85];
+  const label = isVote
+    ? "Votos nominais"
+    : D.census.indicators[measure].label + " · Censo " + reference;
+  const format = (value) =>
+    isVote ? nf.format(value) + " votos" : CensusPanel.format(value, measure);
   const paths = mapPaths
     .map((p) => {
       const r = lookup.get(p.id),
-        t = r ? Math.log1p(r.votes) / Math.log1p(max) : 0;
+        value = getValue(p.id),
+        known = Number.isFinite(value);
+      const t = known
+        ? percent
+          ? value / 100
+          : Math.log1p(value) / Math.log1p(max)
+        : 0;
       const rgb = [236, 242, 242].map((v, i) =>
         Math.round(v + (end[i] - v) * t),
       );
-      return `<path d="${p.d}" fill="rgb(${rgb.join(",")})" class="${r?.municipality_id === mun ? "chosen" : ""}" data-ibge="${esc(p.id)}" tabindex="0" role="button" aria-label="${esc(r?.municipality ?? p.id)}: ${nf.format(r?.votes ?? 0)} votos"><title>${esc(r?.municipality ?? p.id)} · ${nf.format(r?.votes ?? 0)} votos</title></path>`;
+      const text = `${r?.municipality ?? profiles.get(p.id)?.municipality ?? p.id}: ${known ? format(value) : "Não disponível"}${isVote ? "" : "; Censo " + reference}`;
+      return `<path d="${p.d}" fill="${known ? "rgb(" + rgb.join(",") + ")" : "#d7dcda"}" class="${r?.municipality_id === mun ? "chosen" : ""}" data-ibge="${esc(p.id)}" tabindex="0" role="button" aria-label="${esc(text)}"><title>${esc(text)}</title></path>`;
     })
     .join("");
+  $("#map").setAttribute("aria-label", label);
   $("#map").innerHTML =
-    `<svg viewBox="0 0 660 385" aria-label="Distribuição de votos nos municípios de São Paulo">${paths}</svg>`;
+    `<svg viewBox="0 0 660 385" aria-label="${esc(label)} nos municípios de São Paulo">${paths}</svg>`;
   $("#map")
     .querySelectorAll("path")
     .forEach((el) => {
@@ -153,7 +182,18 @@ function drawMap(rows, mun, person) {
     });
   $(".maplegend i").style.background =
     `linear-gradient(90deg,#ecf2f2,rgb(${end.join(",")}))`;
+  $("#mapLegendLow").textContent = isVote
+    ? "Menos votos"
+    : CensusPanel.format(0, measure, true);
+  $("#mapLegendHigh").textContent = isVote
+    ? "Mais votos"
+    : CensusPanel.format(percent ? 100 : max, measure, true);
+  $("#mapNote").textContent = isVote
+    ? "Escala de cor logarítmica de votos nominais. Malha municipal: IBGE. Uma cor indica quantidade, não vitória no município."
+    : `${label}. Escala ${percent ? "linear de 0 a 100%" : "logarítmica"}; municípios sem dado em cinza. ${CensusPanel.temporalNote(selected().year)} Não é um perfil de eleitores individuais.`;
+  $("#mapHint").textContent = "";
 }
+
 function municipalityOptions() {
   const old = $("#municipality").value;
   const rows = summary($("#year").value, $("#person").value).sort((a, b) =>
@@ -209,6 +249,7 @@ async function render() {
         render();
       }),
     );
+  CensusPanel.render(D, { year, person, mun });
   drawMap(all, mun, person);
   renderTimeline(mun);
   DashboardFeatures.render(D, { year, person, mun });
@@ -333,7 +374,7 @@ function renderReport(year, person, mun) {
   const available =
     D.audits.find((a) => a.year === year)?.status === "importado";
   $("#reportContent").innerHTML =
-    `<h3>${esc(c?.name)} · ${year}</h3><p>Recorte: <strong>${esc(mun ? rows[0]?.municipality : "estado de São Paulo")}</strong>. Cargo: ${esc(c?.office)}. Partido na eleição: ${esc(c?.party)}.</p>${available ? `<div class="insight">Foram registrados <strong>${nf.format(now)} votos nominais</strong> para o candidato no recorte. No estado, as cinco maiores votações municipais reuniram <strong>${topShare.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</strong> de seus votos.</div><h3>Distribuição no estado</h3><table><thead><tr><th>Município</th><th class="num">Votos</th><th class="num">% dos votos do candidato em SP</th></tr></thead><tbody>${top.map((r) => `<tr><td>${esc(r.municipality)}</td><td class="num">${nf.format(r.votes)}</td><td class="num">${((100 * r.votes) / total).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%</td></tr>`).join("")}</tbody></table>` : '<p class="notice">A votação deste ano ainda não foi importada.</p>'}<h3>Comparação temporal</h3>${previous && D.audits.find((a) => a.year === previous)?.status === "importado" ? `<p>Em ${previous}, o candidato recebeu ${nf.format(before)} votos no mesmo recorte municipal; em ${year}, ${nf.format(now)}. ${before ? "A variação nominal foi de " + ((now / before - 1) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%." : "Não se calcula variação percentual sobre uma base de zero."}</p>${prev?.office_id !== c?.office_id ? '<p class="notice">Houve mudança de cargo. Esta variação não representa uma comparação direta de desempenho para o mesmo cargo.</p>' : ""}` : "<p>Não há eleição anterior importada para calcular a variação neste recorte.</p>"}<h3>Como interpretar as emendas</h3><p>${esc(D.amendment_coverage)} A destinação estadual, o empenho federal e o pagamento comprovado em 2019–2022 aparecem separados. Pagamentos federais são filtrados por competência mensal. Um status estadual posterior não comprova execução no período.</p><h3>Limites desta leitura</h3><p>Os indicadores são descritivos. Comparações entre seções de anos diferentes exigem uma conferência de continuidade. Os dados não permitem inferir escolhas individuais, bairros de residência ou efeito causal das emendas sobre os votos.</p><p class="muted">Fonte dos cálculos: arquivo oficial do TSE por seção. Reconciliação de totais: consulte Fontes e método.</p>`;
+    `<h3>${esc(c?.name)} · ${year}</h3><p>Recorte: <strong>${esc(mun ? rows[0]?.municipality : "estado de São Paulo")}</strong>. Cargo: ${esc(c?.office)}. Partido na eleição: ${esc(c?.party)}.</p>${available ? `<div class="insight">Foram registrados <strong>${nf.format(now)} votos nominais</strong> para o candidato no recorte. No estado, as cinco maiores votações municipais reuniram <strong>${topShare.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</strong> de seus votos.</div><h3>Distribuição no estado</h3><table><thead><tr><th>Município</th><th class="num">Votos</th><th class="num">% dos votos do candidato em SP</th></tr></thead><tbody>${top.map((r) => `<tr><td>${esc(r.municipality)}</td><td class="num">${nf.format(r.votes)}</td><td class="num">${((100 * r.votes) / total).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%</td></tr>`).join("")}</tbody></table>` : '<p class="notice">A votação deste ano ainda não foi importada.</p>'}<h3>Comparação temporal</h3>${previous && D.audits.find((a) => a.year === previous)?.status === "importado" ? `<p>Em ${previous}, o candidato recebeu ${nf.format(before)} votos no mesmo recorte municipal; em ${year}, ${nf.format(now)}. ${before ? "A variação nominal foi de " + ((now / before - 1) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%." : "Não se calcula variação percentual sobre uma base de zero."}</p>${prev?.office_id !== c?.office_id ? '<p class="notice">Houve mudança de cargo. Esta variação não representa uma comparação direta de desempenho para o mesmo cargo.</p>' : ""}` : "<p>Não há eleição anterior importada para calcular a variação neste recorte.</p>"}${CensusPanel.report(D, { year, mun })}<h3>Como interpretar as emendas</h3><p>${esc(D.amendment_coverage)} A destinação estadual, o empenho federal e o pagamento comprovado em 2019–2022 aparecem separados. Pagamentos federais são filtrados por competência mensal. Um status estadual posterior não comprova execução no período.</p><h3>Limites desta leitura</h3><p>Os indicadores são descritivos. Comparações entre seções de anos diferentes exigem uma conferência de continuidade. Os dados não permitem inferir escolhas individuais, bairros de residência ou efeito causal das emendas sobre os votos.</p><p class="muted">Fonte dos cálculos: arquivo oficial do TSE por seção. Reconciliação de totais: consulte Fontes e método.</p>`;
 }
 function audit() {
   const checked = D.audits
@@ -404,10 +445,13 @@ async function start() {
         "Nenhuma base de votação foi processada. Execute o coletor e o processamento Python.",
       );
     $("#year").value = Math.max(...available);
-    DashboardFeatures.init((code) => {
+    const chooseMunicipality = (code) => {
       $("#municipality").value = code;
       render();
-    });
+    };
+    CensusPanel.init(D, chooseMunicipality);
+    DashboardFeatures.init(chooseMunicipality);
+    $("#mapMeasure").addEventListener("change", render);
     initMap();
     municipalityOptions();
     audit();

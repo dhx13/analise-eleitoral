@@ -40,13 +40,18 @@ def package(github_pages=False, create_archive=True):
         href = "data:text/csv;base64," + base64.b64encode(emendas.read_bytes()).decode("ascii")
         html = re.sub(r'href="data/emendas\.csv"\s+download(?:="")?',
                       lambda match: 'href="' + href + '" download="emendas.csv"', html)
+    census = dist / "data/censos_municipios.csv"
+    if census.exists():
+        href = "data:text/csv;base64," + base64.b64encode(census.read_bytes()).decode("ascii")
+        html = re.sub(r'href="data/censos_municipios\.csv"\s+download(?:="")?',
+                      lambda match: 'href="' + href + '" download="censos_municipios.csv"', html)
     preview = ROOT / "preview.html"
-    preview.write_text(html, encoding="utf-8")
+    preview.write_text(html, encoding="utf-8", newline="\n")
     if github_pages:
         # Pages recebe o mesmo painel completo, com os dados compactados no HTML.
         # Os arquivos por município continuam sendo gerados normalmente em dist/.
         (ROOT / "docs").mkdir(parents=True, exist_ok=True)
-        (ROOT / "docs/index.html").write_text(html, encoding="utf-8")
+        (ROOT / "docs/index.html").write_text(html, encoding="utf-8", newline="\n")
         (ROOT / "docs/.nojekyll").touch()
     archive = archive_project() if create_archive else None
     return {"preview": str(preview), "archive": str(archive) if archive else None,

@@ -2,6 +2,198 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const A = require("../web/analytics.js");
 
+const census = {
+  election_census: { 2018: 2010, 2022: 2022, 2026: 2022 },
+  indicators: { income: { unit: "brl" } },
+  states: [
+    { census_year: 2010, ibge_id: "35", income: 90 },
+    { census_year: 2022, ibge_id: "35", income: 180 },
+  ],
+  rows: [
+    { census_year: 2010, ibge_id: "3500001", income: 10 },
+    { census_year: 2022, ibge_id: "3500001", income: 20 },
+    { census_year: 2022, ibge_id: "3500002", income: 0 },
+    { census_year: 2022, ibge_id: "3500003", income: null },
+  ],
+};
+
+test("censo segue a eleição e o dado de 2026 mantém referência em 2022", () => {
+  assert.equal(A.censusYear(census, 2018), 2010);
+  assert.equal(A.censusYear(census, 2022), 2022);
+  assert.equal(A.censusYear(census, 2026), 2022);
+  assert.equal(A.censusYear(census, 2020), null);
+  assert.equal(A.censusProfile(census, 2018, "3500001").income, 10);
+  assert.equal(A.censusProfile(census, 2026, "3500001").income, 20);
+  assert.equal(A.censusProfile(census, 2022).income, 180);
+  assert.equal(A.censusProfile(census, 2022, "9999999"), null);
+});
+
+test("cruza censo por código IBGE, preserva zero e exclui ausências", () => {
+  const votes = [1, 2, 3, 4].map((id) => ({
+    person: "enrico",
+    year: 2022,
+    municipality_id: String(id),
+    votes: id,
+    registered: 10,
+  }));
+  const crosswalk = { 1: "3500001", 2: "3500002", 3: "3500003", 4: "3500004" };
+  const result = A.censusComparisonRows(votes, [], census, crosswalk, {
+    person: "enrico",
+    year: 2022,
+    censusIndicator: "income",
+    metric: "share",
+  });
+  assert.deepEqual(
+    result.map((r) => [
+      r.municipality_id,
+      r.comparison_value,
+      r.electoral_value,
+    ]),
+    [
+      ["1", 20, 10],
+      ["2", 0, 20],
+    ],
+  );
+  assert.equal(result[0].census_year, 2022);
+  assert.deepEqual(
+    A.censusComparisonRows(
+      votes,
+      [],
+      census,
+      {},
+      {
+        person: "enrico",
+        year: 2022,
+        censusIndicator: "income",
+        metric: "share",
+      },
+    ),
+    [],
+  );
+});
+
+test("censo com emendas usa apenas recursos documentados no período escolhido", () => {
+  const votes = [1, 2].map((id) => ({
+    person: "enrico",
+    year: 2022,
+    municipality_id: String(id),
+    votes: 10,
+    registered: 100,
+  }));
+  const resources = [
+    {
+      person: "enrico",
+      exercise: 2020,
+      municipality_id: "1",
+      committed_brl: 10,
+      committed_brl_records: 1,
+    },
+    {
+      person: "enrico",
+      exercise: 2021,
+      municipality_id: "1",
+      committed_brl: 20,
+      committed_brl_records: 1,
+    },
+    {
+      person: "enrico",
+      exercise: 2020,
+      municipality_id: "2",
+      committed_brl: null,
+      committed_brl_records: 0,
+    },
+  ];
+  const options = {
+    person: "enrico",
+    year: 2022,
+    censusIndicator: "income",
+    metric: "amendments",
+    amendmentMeasure: "committed_brl",
+    start: 2020,
+    end: 2020,
+  };
+  const result = A.censusComparisonRows(
+    votes,
+    resources,
+    census,
+    { 1: "3500001", 2: "3500002" },
+    options,
+  );
+  assert.equal(result.length, 1);
+  assert.equal(result[0].comparison_value, 20);
+  assert.equal(result[0].electoral_value, 10);
+  assert.equal(result[0].records, 1);
+  assert.deepEqual(
+    A.censusComparisonRows(
+      votes,
+      resources,
+      census,
+      { 1: "3500001" },
+      { ...options, start: 2022, end: 2020 },
+    ),
+    [],
+  );
+});
+
+test("variações com censo preservam a base eleitoral e rejeitam 2018 contra si mesmo", () => {
+  const votes = [
+    {
+      person: "enrico",
+      year: 2018,
+      municipality_id: "1",
+      votes: 10,
+      registered: 100,
+    },
+    {
+      person: "enrico",
+      year: 2022,
+      municipality_id: "1",
+      votes: 20,
+      registered: 100,
+    },
+    {
+      person: "enrico",
+      year: 2018,
+      municipality_id: "2",
+      votes: 0,
+      registered: 100,
+    },
+    {
+      person: "enrico",
+      year: 2022,
+      municipality_id: "2",
+      votes: 20,
+      registered: 100,
+    },
+  ];
+  const options = {
+    person: "enrico",
+    year: 2022,
+    censusIndicator: "income",
+    metric: "growth",
+  };
+  const result = A.censusComparisonRows(
+    votes,
+    [],
+    census,
+    { 1: "3500001", 2: "3500002" },
+    options,
+  );
+  assert.equal(result.length, 1);
+  assert.equal(result[0].electoral_value, 100);
+  assert.equal(result[0].comparison_value, 20);
+  assert.deepEqual(
+    A.censusComparisonRows(
+      votes,
+      [],
+      census,
+      { 1: "3500001" },
+      { ...options, year: 2018 },
+    ),
+    [],
+  );
+});
+
 test("ordena valores numéricos e preserva ausentes no fim nas duas direções", () => {
   const rows = [null, 20, 3, 0].map((value, id) => ({
     id,
