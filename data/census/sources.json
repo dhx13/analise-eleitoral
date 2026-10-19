@@ -1,0 +1,359 @@
+[
+  {
+    "key": "population",
+    "year": 2010,
+    "table": 1378,
+    "variables": [
+      93
+    ],
+    "classes": {
+      "1": [
+        0
+      ],
+      "2": [
+        0,
+        5
+      ],
+      "287": [
+        0
+      ],
+      "455": [
+        0
+      ]
+    },
+    "file": "data/census/sidra/2010-population.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/1378/periodos/2010/variaveis/93?localidades=N6[N3[35]]|N3[35]&classificacao=1[0]|2[0,5]|287[0]|455[0]",
+    "source": "https://sidra.ibge.gov.br/tabela/1378",
+    "retrieved_at": "2026-10-19T22:52:30.537Z",
+    "sha256": "1674eb46b4afef0ef4b11ef17a6ba907d9779aaedf2747f2e740a0829e46bddc",
+    "bytes": 159198
+  },
+  {
+    "key": "older",
+    "year": 2010,
+    "table": 1378,
+    "variables": [
+      93
+    ],
+    "classes": {
+      "1": [
+        0
+      ],
+      "2": [
+        0
+      ],
+      "287": [
+        93096,
+        496
+      ],
+      "455": [
+        0
+      ]
+    },
+    "file": "data/census/sidra/2010-older.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/1378/periodos/2010/variaveis/93?localidades=N6[N3[35]]|N3[35]&classificacao=1[0]|2[0]|287[93096,496]|455[0]",
+    "source": "https://sidra.ibge.gov.br/tabela/1378",
+    "retrieved_at": "2026-10-19T22:52:30.537Z",
+    "sha256": "9b29232d2eb48de19f8a5a61ce6a12de620fe3daf44ada7464e2c3a6f5f12f09",
+    "bytes": 157639
+  },
+  {
+    "key": "literacy",
+    "year": 2010,
+    "table": 1379,
+    "variables": [
+      138
+    ],
+    "classes": {
+      "1": [
+        0
+      ],
+      "59": [
+        93024,
+        1023
+      ],
+      "86": [
+        0
+      ],
+      "287": [
+        93086,
+        93087,
+        93088,
+        93089,
+        93090,
+        93091,
+        93092,
+        93093,
+        93094,
+        11942,
+        496
+      ]
+    },
+    "file": "data/census/sidra/2010-literacy.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/1379/periodos/2010/variaveis/138?localidades=N6[N3[35]]|N3[35]&classificacao=1[0]|59[93024,1023]|86[0]|287[93086,93087,93088,93089,93090,93091,93092,93093,93094,11942,496]",
+    "source": "https://sidra.ibge.gov.br/tabela/1379",
+    "retrieved_at": "2026-10-19T22:52:29.342Z",
+    "sha256": "52ae2fb00b842cd65c826765a1088a31ae7d9e18a7137d713599c0837e63f013",
+    "bytes": 1734836
+  },
+  {
+    "key": "income",
+    "year": 2010,
+    "table": 3578,
+    "variables": [
+      2035,
+      2012,
+      2013
+    ],
+    "classes": {
+      "1": [
+        6795
+      ],
+      "386": [
+        9680
+      ]
+    },
+    "file": "data/census/sidra/2010-income.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/3578/periodos/2010/variaveis/2035|2012|2013?localidades=N6[N3[35]]|N3[35]&classificacao=1[6795]|386[9680]",
+    "source": "https://sidra.ibge.gov.br/tabela/3578",
+    "retrieved_at": "2026-10-19T22:52:34.228Z",
+    "sha256": "bd4228bac175a3fdaaa121daae2f6b94b7d87a1ebc8cc346331d69766e94ae2f",
+    "bytes": 241154
+  },
+  {
+    "key": "water_garbage",
+    "year": 2010,
+    "table": 3218,
+    "variables": [
+      96
+    ],
+    "classes": {
+      "61": [
+        0,
+        92853
+      ],
+      "67": [
+        0,
+        2520
+      ],
+      "299": [
+        0
+      ],
+      "309": [
+        0
+      ]
+    },
+    "file": "data/census/sidra/2010-water_garbage.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/3218/periodos/2010/variaveis/96?localidades=N6[N3[35]]|N3[35]&classificacao=61[0,92853]|67[0,2520]|299[0]|309[0]",
+    "source": "https://sidra.ibge.gov.br/tabela/3218",
+    "retrieved_at": "2026-10-19T22:52:33.123Z",
+    "sha256": "cd09e53645851e86fd6faa6bc08fadd7900f94646efcea6331425352fde4d31c",
+    "bytes": 317425
+  },
+  {
+    "key": "sewer",
+    "year": 2010,
+    "table": 1394,
+    "variables": [
+      96
+    ],
+    "classes": {
+      "1": [
+        0
+      ],
+      "63": [
+        0
+      ],
+      "125": [
+        0
+      ],
+      "458": [
+        0
+      ],
+      "11558": [
+        0,
+        92855
+      ]
+    },
+    "file": "data/census/sidra/2010-sewer.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/1394/periodos/2010/variaveis/96?localidades=N6[N3[35]]|N3[35]&classificacao=1[0]|63[0]|125[0]|458[0]|11558[0,92855]",
+    "source": "https://sidra.ibge.gov.br/tabela/1394",
+    "retrieved_at": "2026-10-19T22:52:33.301Z",
+    "sha256": "57c4a4bc677e1915ed40f1930a531997f88dd1e1e3ac467f6beefa5cbd80d01f",
+    "bytes": 158976
+  },
+  {
+    "key": "population",
+    "year": 2022,
+    "table": 9514,
+    "variables": [
+      93
+    ],
+    "classes": {
+      "2": [
+        6794,
+        5
+      ],
+      "286": [
+        113635
+      ],
+      "287": [
+        100362
+      ]
+    },
+    "file": "data/census/sidra/2022-population.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/9514/periodos/2022/variaveis/93?localidades=N6[N3[35]]|N3[35]&classificacao=2[6794,5]|286[113635]|287[100362]",
+    "source": "https://sidra.ibge.gov.br/tabela/9514",
+    "retrieved_at": "2026-10-19T22:52:36.087Z",
+    "sha256": "b0e29d458103c72f8bac2e94196a3f7e9ffcfb8874e171836f7519353cdf5c3b",
+    "bytes": 158996
+  },
+  {
+    "key": "older",
+    "year": 2022,
+    "table": 9514,
+    "variables": [
+      93
+    ],
+    "classes": {
+      "2": [
+        6794
+      ],
+      "286": [
+        113635
+      ],
+      "287": [
+        93096,
+        93097,
+        93098,
+        49108,
+        49109,
+        60040,
+        60041,
+        6653
+      ]
+    },
+    "file": "data/census/sidra/2022-older.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/9514/periodos/2022/variaveis/93?localidades=N6[N3[35]]|N3[35]&classificacao=2[6794]|286[113635]|287[93096,93097,93098,49108,49109,60040,60041,6653]",
+    "source": "https://sidra.ibge.gov.br/tabela/9514",
+    "retrieved_at": "2026-10-19T22:52:36.917Z",
+    "sha256": "32b14f3d76c568fe7c72b146e05f244a3efae43c70f1c9806acf09c8c4218af4",
+    "bytes": 625210
+  },
+  {
+    "key": "literacy",
+    "year": 2022,
+    "table": 9542,
+    "variables": [
+      950
+    ],
+    "classes": {
+      "2": [
+        6794
+      ],
+      "59": [
+        93024,
+        1023
+      ],
+      "86": [
+        95251
+      ],
+      "287": [
+        100362
+      ]
+    },
+    "file": "data/census/sidra/2022-literacy.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/9542/periodos/2022/variaveis/950?localidades=N6[N3[35]]|N3[35]&classificacao=2[6794]|59[93024,1023]|86[95251]|287[100362]",
+    "source": "https://sidra.ibge.gov.br/tabela/9542",
+    "retrieved_at": "2026-10-19T22:52:37.556Z",
+    "sha256": "387e4bcc02455a124ffbc2d3139259fff6838d42cc867f14c94434ea6569ce30",
+    "bytes": 159175
+  },
+  {
+    "key": "income",
+    "year": 2022,
+    "table": 10295,
+    "variables": [
+      13604,
+      13431,
+      13534
+    ],
+    "classes": {
+      "2": [
+        6794
+      ],
+      "58": [
+        95253
+      ],
+      "86": [
+        95251
+      ]
+    },
+    "file": "data/census/sidra/2022-income.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/10295/periodos/2022/variaveis/13604|13431|13534?localidades=N6[N3[35]]|N3[35]&classificacao=2[6794]|58[95253]|86[95251]",
+    "source": "https://sidra.ibge.gov.br/tabela/10295",
+    "retrieved_at": "2026-10-19T22:52:40.111Z",
+    "sha256": "860e0059413f2cb84140c3e80ef5c321cc37ccc50bdf78d039112922118ac2ba",
+    "bytes": 242382
+  },
+  {
+    "key": "water",
+    "year": 2022,
+    "table": 6803,
+    "variables": [
+      381
+    ],
+    "classes": {
+      "1821": [
+        72129,
+        72144
+      ]
+    },
+    "file": "data/census/sidra/2022-water.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6803/periodos/2022/variaveis/381?localidades=N6[N3[35]]|N3[35]&classificacao=1821[72129,72144]",
+    "source": "https://sidra.ibge.gov.br/tabela/6803",
+    "retrieved_at": "2026-10-19T22:52:38.553Z",
+    "sha256": "54dbd65f558a2b7b851066938f537a4656d9b172f969e1db9ed478a015cc8c1a",
+    "bytes": 158613
+  },
+  {
+    "key": "garbage",
+    "year": 2022,
+    "table": 6892,
+    "variables": [
+      381
+    ],
+    "classes": {
+      "67": [
+        10972,
+        2520
+      ]
+    },
+    "file": "data/census/sidra/2022-garbage.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6892/periodos/2022/variaveis/381?localidades=N6[N3[35]]|N3[35]&classificacao=67[10972,2520]",
+    "source": "https://sidra.ibge.gov.br/tabela/6892",
+    "retrieved_at": "2026-10-19T22:52:38.553Z",
+    "sha256": "e89da76b76c52e94dffb4155c6ffec6929c26aea8714eed9798664fdf9971f27",
+    "bytes": 158391
+  },
+  {
+    "key": "sewer",
+    "year": 2022,
+    "table": 6805,
+    "variables": [
+      381
+    ],
+    "classes": {
+      "11558": [
+        46292,
+        46290
+      ]
+    },
+    "file": "data/census/sidra/2022-sewer.json.gz",
+    "url": "https://servicodados.ibge.gov.br/api/v3/agregados/6805/periodos/2022/variaveis/381?localidades=N6[N3[35]]|N3[35]&classificacao=11558[46292,46290]",
+    "source": "https://sidra.ibge.gov.br/tabela/6805",
+    "retrieved_at": "2026-10-19T22:52:41.550Z",
+    "sha256": "9b2b4615f01dc792bca8396ace9540e17be2d2de5d3d775a60d0a07d4d30296c",
+    "bytes": 158428
+  }
+]
