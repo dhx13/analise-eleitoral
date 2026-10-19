@@ -35,7 +35,8 @@
           </h1>
           <p class="lead">
             Explore a votação de Enrico Misasi e Reinaldo Alguz e acompanhe as
-            destinações de emendas dos exercícios de 2019 a 2022.
+            destinações de emendas dos exercícios de 2019 a 2022. Conheça também
+            o contexto socioeconômico nos Censos 2010 e 2022.
           </p>
         </div>
         <aside class="scope">
@@ -106,7 +107,7 @@
             <summary class="cardhead">
               <div>
                 <p class="eyebrow">DISTRIBUIÇÃO GEOGRÁFICA</p>
-                <h2>Onde estão os votos</h2>
+                <h2>Votos e contexto no mapa</h2>
               </div>
               <span class="panel-state" aria-hidden="true"></span>
             </summary>
@@ -115,15 +116,21 @@
                 Selecione um dos 645 municípios no mapa para abrir seus locais e
                 seções.
               </p>
+              <label for="mapMeasure"
+                >Colorir o mapa por<select id="mapMeasure">
+                  <option value="votes">Votos nominais</option>
+                </select></label
+              >
               <div
                 id="map"
                 class="map"
                 aria-label="Mapa municipal de votação"
               ></div>
               <div class="maplegend">
-                <span>Menos votos</span><i></i><span>Mais votos</span>
+                <span id="mapLegendLow">Menos votos</span><i></i
+                ><span id="mapLegendHigh">Mais votos</span>
               </div>
-              <small class="muted"
+              <small id="mapNote" class="muted"
                 >Escala de cor logarítmica de votos nominais. Malha municipal:
                 IBGE. Uma cor indica quantidade, não vitória no
                 município.</small
@@ -148,6 +155,67 @@
             </div>
           </details>
         </div>
+        <details class="card panel" id="census" data-panel="census" open>
+          <summary class="cardhead">
+            <div>
+              <p class="eyebrow">CONTEXTO SOCIOECONÔMICO · IBGE</p>
+              <h2>Perfil da população e dos domicílios</h2>
+            </div>
+            <span class="panel-state" aria-hidden="true"></span>
+          </summary>
+          <div class="panel-body">
+            <div class="section-actions">
+              <p id="censusContext" class="context" role="status"></p>
+              <span id="censusTag" class="pill"></span>
+            </div>
+            <div id="censusMetrics" class="metrics census-metrics"></div>
+            <p class="note">
+              O perfil municipal descreve residentes e domicílios, não
+              indivíduos que votaram no candidato. A renda é nominal, sem ajuste
+              pela inflação. As definições e fontes de cada indicador estão em
+              Fontes e método.
+            </p>
+            <div class="sort-controls">
+              <label for="censusSort"
+                >Indicador da tabela<select id="censusSort"></select></label
+              ><label for="censusDirection"
+                >Ordenação dos municípios<select id="censusDirection">
+                  <option value="desc">Decrescente</option>
+                  <option value="asc">Crescente</option>
+                </select></label
+              ><button id="exportCensus" class="secondary">
+                Baixar perfil censitário CSV
+              </button>
+            </div>
+            <p class="muted">
+              A tabela segue o município selecionado no painel. Limpe o filtro
+              municipal para comparar todo o estado.
+            </p>
+            <div class="tablewrap">
+              <table>
+                <caption class="sr">
+                  Indicadores censitários municipais do ano de referência
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Município</th>
+                    <th>Código IBGE</th>
+                    <th id="censusMetricHeading" class="num">Indicador</th>
+                  </tr>
+                </thead>
+                <tbody id="censusBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination">
+              <span id="censusPageInfo" aria-live="polite"></span
+              ><button id="censusPrev" class="secondary">
+                Municípios anteriores</button
+              ><button id="censusNext" class="secondary">
+                Próximos municípios
+              </button>
+            </div>
+          </div>
+        </details>
         <details class="card panel" data-panel="timeline" open>
           <summary class="cardhead">
             <div>
@@ -394,7 +462,7 @@
           <summary class="cardhead">
             <div>
               <p class="eyebrow">ASSOCIAÇÃO TERRITORIAL EXPLORATÓRIA</p>
-              <h2>Emendas e votação por município</h2>
+              <h2>Emendas, censo e votação por município</h2>
             </div>
             <span class="panel-state" aria-hidden="true"></span>
           </summary>
@@ -405,10 +473,10 @@
             </p>
             <div class="comparison-filters">
               <label for="resourceMeasure"
-                >Medida de recurso<select id="resourceMeasure"></select
+                >Variável horizontal<select id="resourceMeasure"></select
               ></label>
               <label for="voteMeasure"
-                >Indicador eleitoral<select id="voteMeasure">
+                >Comparar com<select id="voteMeasure">
                   <option value="share">
                     Participação nos votos registrados (%)
                   </option>
@@ -419,9 +487,15 @@
                   <option value="delta_share">
                     Variação da participação desde 2018 (p.p.)
                   </option>
+                  <option value="amendments">
+                    Recursos de emendas (com indicador do censo)
+                  </option>
                 </select></label
               >
-              <label for="resourceStart"
+              <label for="censusResourceMeasure" hidden
+                >Medida das emendas<select id="censusResourceMeasure"></select
+              ></label>
+              <label id="resourceStartLabel" for="resourceStart"
                 >Exercício inicial<select id="resourceStart">
                   <option>2019</option>
                   <option>2020</option>
@@ -429,7 +503,7 @@
                   <option>2022</option>
                 </select></label
               >
-              <label for="resourceEnd"
+              <label id="resourceEndLabel" for="resourceEnd"
                 >Exercício final<select id="resourceEnd">
                   <option>2019</option>
                   <option>2020</option>
@@ -456,14 +530,17 @@
                 ><small>Empates recebem posição média</small>
               </article>
               <article>
-                <span>Recurso nos municípios comparados</span
+                <span id="correlationReferenceLabel"
+                  >Recurso nos municípios comparados</span
                 ><strong id="correlationAmount">—</strong
-                ><small>Medida e exercícios selecionados</small>
+                ><small id="correlationReferenceNote"
+                  >Medida e exercícios selecionados</small
+                >
               </article>
             </div>
             <label class="check-label" for="resourceLog"
-              ><input id="resourceLog" type="checkbox" /> Escala logarítmica de
-              recursos no gráfico</label
+              ><input id="resourceLog" type="checkbox" /> Escala logarítmica do
+              eixo horizontal</label
             >
             <div id="scatter" class="scatter"></div>
             <p id="correlationHint" class="context" aria-live="polite"></p>
@@ -475,7 +552,10 @@
               cobertura é parcial, e não se atribuem recursos a seções por
               proximidade. Os coeficientes usam os valores originais, mesmo com
               escala logarítmica no gráfico. Não são apresentados testes de
-              significância ou estimativas de efeito.
+              significância ou estimativas de efeito. Indicadores do censo
+              descrevem a população residente, não o perfil individual dos
+              eleitores. Sua referência é 2010 para a eleição de 2018 e 2022
+              para as eleições de 2022 e 2026.
             </p>
             <div class="section-actions">
               <h3>Municípios incluídos no cálculo</h3>
@@ -491,11 +571,15 @@
                 <thead>
                   <tr>
                     <th>Município</th>
-                    <th class="num">Recurso documentado</th>
+                    <th id="comparisonXHeading" class="num">
+                      Recurso documentado
+                    </th>
                     <th id="correlationMetricHeading" class="num">
                       Indicador eleitoral
                     </th>
-                    <th class="num">Registros com valor</th>
+                    <th id="comparisonRecordsHeading" class="num">
+                      Registros com valor
+                    </th>
                   </tr>
                 </thead>
                 <tbody id="comparisonBody"></tbody>
@@ -525,6 +609,12 @@
           <p class="eyebrow">RASTREABILIDADE</p>
           <h2>Fontes, cobertura e método</h2>
           <div id="audit"></div>
+          <p>
+            <a href="data/censos_municipios.csv" download
+              >Baixar todos os indicadores censitários municipais de 2010 e 2022
+              (CSV)</a
+            >
+          </p>
           <h3>O que é comparado</h3>
           <p>
             A identidade do candidato é resolvida por nome civil no cadastro do
@@ -663,6 +753,7 @@
     </main>
     <script src="panels.js"></script>
     <script src="analytics.js"></script>
+    <script src="census.js"></script>
     <script src="features.js"></script>
     <script src="app.js"></script>
   </body>

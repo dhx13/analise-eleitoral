@@ -153,6 +153,76 @@
       });
   }
 
+  function censusYear(census, election) {
+    const year = Number(census?.election_census?.[election]);
+    return [2010, 2022].includes(year) ? year : null;
+  }
+
+  function censusProfile(census, election, ibge = "35") {
+    const year = censusYear(census, election);
+    if (year === null) return null;
+    const rows = ibge === "35" ? census.states : census.rows;
+    return (
+      rows.find((row) => row.census_year === year && row.ibge_id === ibge) ||
+      null
+    );
+  }
+
+  function censusComparisonRows(
+    summary,
+    resources,
+    census,
+    crosswalk,
+    options,
+  ) {
+    const { person, year, metric, censusIndicator } = options;
+    const reference = censusYear(census, year);
+    if (reference === null || !census.indicators[censusIndicator]) return [];
+    const profiles = new Map(
+      census.rows
+        .filter((row) => row.census_year === reference)
+        .map((row) => [row.ibge_id, row]),
+    );
+    const baseline = new Map(
+      summary
+        .filter((row) => row.person === person && row.year === 2018)
+        .map((row) => [row.municipality_id, row]),
+    );
+    if (year === 2018 && ["growth", "delta_share"].includes(metric)) return [];
+    const rows =
+      metric === "amendments"
+        ? comparisonRows(summary, resources, {
+            ...options,
+            measure: options.amendmentMeasure,
+            metric: "votes",
+          })
+        : summary.filter((row) => row.person === person && row.year === year);
+    return rows.flatMap((row) => {
+      const profile = profiles.get(crosswalk[row.municipality_id]);
+      const x = profile?.[censusIndicator];
+      const y =
+        metric === "amendments"
+          ? row.resource_brl
+          : voteValue(row, baseline.get(row.municipality_id), metric);
+      if (
+        missing(x) ||
+        missing(y) ||
+        !Number.isFinite(x) ||
+        !Number.isFinite(y)
+      )
+        return [];
+      return [
+        {
+          ...row,
+          ibge_id: profile.ibge_id,
+          census_year: reference,
+          comparison_value: x,
+          electoral_value: y,
+        },
+      ];
+    });
+  }
+
   return {
     sortAmendments,
     resourceValue,
@@ -160,5 +230,8 @@
     ranks,
     spearman,
     comparisonRows,
+    censusYear,
+    censusProfile,
+    censusComparisonRows,
   };
 });

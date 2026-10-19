@@ -38,7 +38,8 @@
     selection,
     selectMunicipality,
     amendmentPage = 0,
-    currentPerson;
+    currentPerson,
+    currentCensusYear;
   let comparison = [];
 
   const resourceLabels = {
@@ -159,34 +160,59 @@
   }
 
   function correlationOptions() {
+    const measure = $("#resourceMeasure").value;
     return {
       person: selection.person,
       year: selection.year,
-      measure: $("#resourceMeasure").value,
+      measure,
+      censusIndicator: measure.startsWith("census:") ? measure.slice(7) : null,
       metric: $("#voteMeasure").value,
+      amendmentMeasure: $("#censusResourceMeasure").value,
       start: Number($("#resourceStart").value),
       end: Number($("#resourceEnd").value),
     };
   }
+  const xLabel = (options) =>
+    options.censusIndicator
+      ? data.census.indicators[options.censusIndicator].label +
+        " · Censo " +
+        A.censusYear(data.census, options.year)
+      : resourceLabels[options.measure];
+  const yLabel = (options) =>
+    options.metric === "amendments"
+      ? resourceLabels[options.amendmentMeasure]
+      : voteLabels[options.metric];
+  const xFormat = (value, options, short = false) =>
+    options.censusIndicator
+      ? CensusPanel.format(value, options.censusIndicator, short)
+      : short
+        ? "R$ " + compact.format(value)
+        : money.format(value);
+  const yFormat = (value, options, short = false) =>
+    options.metric === "amendments"
+      ? short
+        ? "R$ " + compact.format(value)
+        : money.format(value)
+      : voteFormat(value);
 
-  function drawScatter(rows) {
+  function drawScatter(rows, options) {
     if (!rows.length) {
       $("#scatter").innerHTML =
         '<p class="empty">Não há pares municipais documentados para esta combinação de filtros.</p>';
       return;
     }
     const width = 920,
-      height = 380,
+      height = 390,
       left = 92,
       right = 24,
-      top = 28,
+      top = 36,
       bottom = 72;
     const log = $("#resourceLog").checked;
     const transform = (value) =>
       log ? Math.sign(value) * Math.log10(1 + Math.abs(value)) : value;
     const inverse = (value) =>
       log ? Math.sign(value) * (10 ** Math.abs(value) - 1) : value;
-    const xs = rows.map((row) => transform(row.resource_brl)),
+    const xs = rows.map((row) => transform(row.comparison_value)),
       ys = rows.map((row) => row.electoral_value);
     let xmin = Math.min(0, ...xs),
       xmax = Math.max(0, ...xs),
@@ -201,22 +227,21 @@
       height -
       bottom -
       ((value - ymin) / (ymax - ymin)) * (height - top - bottom);
-    const ticks = Array.from({ length: 5 }, (_, i) => i / 4);
-    const axes = ticks
+    const axes = Array.from({ length: 5 }, (_, i) => i / 4)
       .map((t) => {
         const tx = left + t * (width - left - right),
           ty = height - bottom - t * (height - top - bottom);
-        return `<line x1="${left}" x2="${width - right}" y1="${ty}" y2="${ty}" class="plot-grid"/><text x="${left - 12}" y="${ty + 4}" text-anchor="end">${escape(voteFormat(ymin + t * (ymax - ymin)))}</text><text x="${tx}" y="${height - bottom + 25}" text-anchor="middle">R$ ${escape(compact.format(inverse(xmin + t * (xmax - xmin))))}</text>`;
+        return `<line x1="${left}" x2="${width - right}" y1="${ty}" y2="${ty}" class="plot-grid"/><text x="${left - 12}" y="${ty + 4}" text-anchor="end">${escape(yFormat(ymin + t * (ymax - ymin), options, true))}</text><text x="${tx}" y="${height - bottom + 25}" text-anchor="middle">${escape(xFormat(inverse(xmin + t * (xmax - xmin)), options, true))}</text>`;
       })
       .join("");
     const points = rows
       .map((row) => {
-        const label = `${row.municipality}: ${money.format(row.resource_brl)}; ${voteLabels[$("#voteMeasure").value]}: ${voteFormat(row.electoral_value)}`;
-        return `<circle cx="${x(row.resource_brl)}" cy="${y(row.electoral_value)}" r="${row.municipality_id === selection.mun ? 7 : 5}" class="plot-point ${row.municipality_id === selection.mun ? "chosen" : ""}" data-municipality="${escape(row.municipality_id)}" role="button" tabindex="0" aria-label="${escape(label)}"><title>${escape(label)}</title></circle>`;
+        const label = `${row.municipality}: ${xFormat(row.comparison_value, options)}; ${yLabel(options)}: ${yFormat(row.electoral_value, options)}`;
+        return `<circle cx="${x(row.comparison_value)}" cy="${y(row.electoral_value)}" r="${row.municipality_id === selection.mun ? 7 : 5}" class="plot-point ${row.municipality_id === selection.mun ? "chosen" : ""}" data-municipality="${escape(row.municipality_id)}" role="button" tabindex="0" aria-label="${escape(label)}"><title>${escape(label)}</title></circle>`;
       })
       .join("");
     $("#scatter").innerHTML =
-      `<svg viewBox="0 0 ${width} ${height}" role="group" aria-label="Dispersão municipal de recursos e votação"><text x="${left}" y="15">${escape(voteLabels[$("#voteMeasure").value])}</text>${axes}<line x1="${left}" x2="${width - right}" y1="${height - bottom}" y2="${height - bottom}" class="plot-axis"/>${points}<text x="${width / 2}" y="${height - 12}" text-anchor="middle">${escape(resourceLabels[$("#resourceMeasure").value])}${log ? " · escala logarítmica" : ""} (R$)</text></svg>`;
+      `<svg viewBox="0 0 ${width} ${height}" role="group" aria-label="Dispersão de indicadores municipais"><text x="${left}" y="15">${escape(yLabel(options))}</text>${axes}<line x1="${left}" x2="${width - right}" y1="${height - bottom}" y2="${height - bottom}" class="plot-axis"/>${points}<text x="${width / 2}" y="${height - 12}" text-anchor="middle">${escape(xLabel(options))}${log ? " · escala logarítmica" : ""}</text></svg>`;
     $("#scatter")
       .querySelectorAll("[data-municipality]")
       .forEach((point) => {
@@ -237,78 +262,125 @@
       });
   }
 
-  function renderCorrelation() {
-    const options = correlationOptions();
-    comparison = A.comparisonRows(
-      data.summary,
-      data.municipal_resources?.rows || [],
-      options,
-    );
+  function resourceNotes(options, measure) {
     const audit = (data.municipal_resources?.coverage || []).filter(
       (row) =>
         row.person === options.person &&
-        row.measure === options.measure &&
+        row.measure === measure &&
         row.exercise >= options.start &&
         row.exercise <= options.end,
     );
     const excluded = audit.reduce((n, row) => n + row.excluded_records, 0);
-    const excludedAmount = audit.reduce((n, row) => n + row.excluded_brl, 0);
-    const includedAmount = comparison.reduce(
-      (n, row) => n + row.resource_brl,
-      0,
-    );
-    const x = comparison.map((row) => row.resource_brl),
-      y = comparison.map((row) => row.electoral_value);
-    const coefficient = (value) =>
-      value === null
-        ? "Não calculável"
-        : value.toLocaleString("pt-BR", { maximumFractionDigits: 3 });
-    $("#correlationCount").textContent = comparison.length;
-    $("#pearson").textContent = coefficient(A.pearson(x, y));
-    $("#spearman").textContent = coefficient(A.spearman(x, y));
-    $("#correlationAmount").textContent = money.format(includedAmount);
+    const amount = audit.reduce((n, row) => n + row.excluded_brl, 0);
     const notes = [
-      `${selection.person === "enrico" ? "Enrico Misasi" : "Reinaldo Alguz"} · eleição ${selection.year} · exercícios ${options.start}–${options.end}.`,
-      "Comparação entre municípios de SP com valor documentado. Municípios sem registro elegível ficam fora, sem atribuir valor zero.",
-      `${excluded} registros com valor (${money.format(excludedAmount)}) excluídos por localidade não municipal ou fora de SP.`,
+      `Exercícios ${options.start}–${options.end}. Municípios sem registro elegível ficam fora, sem atribuir valor zero.`,
+      `${excluded} registros com valor (${money.format(amount)}) excluídos por localidade não municipal ou fora de SP.`,
     ];
-    const municipalitiesWithResource = new Set(
-      (data.municipal_resources?.rows || [])
-        .filter(
-          (row) =>
-            row.person === options.person &&
-            row.exercise >= options.start &&
-            row.exercise <= options.end &&
-            row[options.measure] !== null &&
-            row[options.measure] !== undefined,
-        )
-        .map((row) => row.municipality_id),
-    ).size;
-    if (municipalitiesWithResource > comparison.length)
-      notes.push(
-        `${municipalitiesWithResource - comparison.length} municípios com recurso ficaram fora por falta de indicador eleitoral definido para a comparação escolhida.`,
-      );
     if (options.start > options.end)
       notes.push("Escolha um exercício inicial menor ou igual ao final.");
     if (selection.person === "reinaldo")
       notes.push(
         "Cobertura estadual parcial: 2019 e datas dos pagamentos pendentes.",
       );
-    if (options.measure === "committed_brl")
+    if (measure === "committed_brl")
       notes.push(
         "Empenho federal acumulado na posição da base; não é autorização original nem execução limitada a 2022.",
       );
-    if (options.measure === "paid_in_period_brl")
+    if (measure === "paid_in_period_brl")
       notes.push(
         "Localidade do favorecido; não comprova o município de aplicação do recurso.",
       );
     if (selection.year === 2018)
-      notes.push(
-        "2018 é anterior às emendas do recorte. As variações desde 2018 não são calculadas para o próprio ano de 2018.",
-      );
+      notes.push("2018 é anterior às emendas do recorte.");
     if (selection.year === 2022)
       notes.push(
         "O recorte de emendas inclui 2022 inteiro e pode conter registros posteriores à eleição.",
+      );
+    return notes;
+  }
+
+  function renderCorrelation() {
+    let options = correlationOptions();
+    const isCensus = Boolean(options.censusIndicator);
+    const amendmentOption = $("#voteMeasure option[value='amendments']");
+    amendmentOption.disabled = !isCensus;
+    if (!isCensus && options.metric === "amendments") {
+      $("#voteMeasure").value = "share";
+      options = correlationOptions();
+    }
+    const usesAmendments = !isCensus || options.metric === "amendments";
+    $("#resourceStartLabel").hidden = $("#resourceEndLabel").hidden =
+      !usesAmendments;
+    $("#censusResourceMeasure").closest("label").hidden =
+      !isCensus || options.metric !== "amendments";
+    comparison = isCensus
+      ? A.censusComparisonRows(
+          data.summary,
+          data.municipal_resources?.rows || [],
+          data.census,
+          data.crosswalk,
+          options,
+        )
+      : A.comparisonRows(
+          data.summary,
+          data.municipal_resources?.rows || [],
+          options,
+        ).map((row) => ({
+          ...row,
+          comparison_value: row.resource_brl,
+          ibge_id: data.crosswalk[row.municipality_id],
+        }));
+    const notes = [
+      `${selection.person === "enrico" ? "Enrico Misasi" : "Reinaldo Alguz"} · eleição ${selection.year}. Comparação municipal de SP, com um par por município.`,
+    ];
+    if (isCensus) {
+      notes.push(CensusPanel.temporalNote(selection.year));
+      notes.push(
+        "O censo descreve residentes, não indivíduos que votaram no candidato. Dados ausentes não recebem zero.",
+      );
+      const profileCount = data.census.rows.filter(
+        (row) =>
+          row.census_year === A.censusYear(data.census, options.year) &&
+          Number.isFinite(row[options.censusIndicator]),
+      ).length;
+      if (options.metric !== "amendments")
+        notes.push(
+          `${profileCount} municípios com indicador censitário; ${comparison.length} com par definido na variável escolhida.`,
+        );
+      if (data.census.indicators[options.censusIndicator].unit === "brl")
+        notes.push(
+          "Renda nominal em reais do ano do censo, sem ajuste pela inflação; não mede ganho real de poder de compra entre censos.",
+        );
+      if (options.censusIndicator === "sewer_network_pct")
+        notes.push(
+          "Em 2022, rede inclui fossa ligada à rede; o questionário mudou em relação a 2010.",
+        );
+    }
+    if (usesAmendments) {
+      const measure = isCensus ? options.amendmentMeasure : options.measure;
+      notes.push(...resourceNotes(options, measure));
+      const available = new Set(
+        (data.municipal_resources?.rows || [])
+          .filter(
+            (row) =>
+              row.person === options.person &&
+              row.exercise >= options.start &&
+              row.exercise <= options.end &&
+              Number.isFinite(row[measure]),
+          )
+          .map((row) => row.municipality_id),
+      ).size;
+      if (available > comparison.length)
+        notes.push(
+          `${available - comparison.length} municípios com recurso ficaram fora por falta de indicador definido na outra variável.`,
+        );
+    }
+    if (
+      selection.year === 2018 &&
+      ["growth", "delta_share"].includes(options.metric)
+    )
+      notes.push(
+        "As variações desde 2018 não são calculadas para o próprio ano de 2018.",
       );
     const baselineOffice = data.people.find(
       (row) => row.person === selection.person && row.year === 2018,
@@ -323,29 +395,65 @@
       notes.push(
         "Há mudança de cargo em relação a 2018; a variação não é uma comparação do mesmo cargo.",
       );
+    const x = comparison.map((row) => row.comparison_value),
+      y = comparison.map((row) => row.electoral_value);
+    const pearson = A.pearson(x, y),
+      spearman = A.spearman(x, y);
     if (comparison.length < 3)
       notes.push(
         "São necessários pelo menos três pares para mostrar os coeficientes.",
       );
-    else if (A.pearson(x, y) === null)
+    else if (pearson === null)
       notes.push(
         "Uma das variáveis não apresenta variação; os coeficientes não são definidos.",
       );
+    const coefficient = (value) =>
+      value === null
+        ? "Não calculável"
+        : value.toLocaleString("pt-BR", { maximumFractionDigits: 3 });
+    $("#correlationCount").textContent = comparison.length;
+    $("#pearson").textContent = coefficient(pearson);
+    $("#spearman").textContent = coefficient(spearman);
+    if (isCensus) {
+      const reference = A.censusProfile(data.census, options.year);
+      $("#correlationReferenceLabel").textContent =
+        "Indicador oficial no estado de SP";
+      $("#correlationReferenceNote").textContent =
+        "Censo " +
+        A.censusYear(data.census, options.year) +
+        "; não é a média dos municípios";
+      $("#correlationAmount").textContent = CensusPanel.format(
+        reference?.[options.censusIndicator],
+        options.censusIndicator,
+      );
+    } else {
+      $("#correlationReferenceLabel").textContent =
+        "Recurso nos municípios comparados";
+      $("#correlationReferenceNote").textContent =
+        "Medida e exercícios selecionados";
+      $("#correlationAmount").textContent = money.format(
+        comparison.reduce((n, row) => n + row.resource_brl, 0),
+      );
+    }
     $("#correlationCoverage").textContent = notes.join(" ");
     $("#correlationSelection").textContent = selection.mun
       ? comparison.some((row) => row.municipality_id === selection.mun)
         ? "O município selecionado está destacado. Os coeficientes continuam usando todos os pares elegíveis de SP."
-        : "O município selecionado não tem par elegível neste recorte. Isso não comprova ausência de emendas."
-      : "Selecione um ponto ou município na tabela para destacá-lo no painel. O filtro municipal destaca um ponto e mantém a comparação estadual.";
+        : "O município selecionado não tem par elegível neste recorte. Ausência de dado não comprova ausência de recursos."
+      : "Selecione um ponto ou município na tabela para destacá-lo no painel. O filtro municipal mantém a comparação estadual.";
     $("#correlationHint").textContent = "";
-    drawScatter(comparison);
-    $("#correlationMetricHeading").textContent = voteLabels[options.metric];
+    drawScatter(comparison, options);
+    $("#correlationMetricHeading").textContent = yLabel(options);
+    $("#comparisonXHeading").textContent = xLabel(options);
+    $("#comparisonRecordsHeading").textContent = isCensus
+      ? "Censo / registros de emendas"
+      : "Registros com valor";
     $("#comparisonBody").innerHTML =
       [...comparison]
-        .sort((a, b) => b.resource_brl - a.resource_brl)
+        .sort((a, b) => b.comparison_value - a.comparison_value)
         .map(
           (row) =>
-            `<tr class="${row.municipality_id === selection.mun ? "highlighted" : ""}"><td><button class="text-button" data-municipality="${escape(row.municipality_id)}">${escape(row.municipality)}</button></td><td class="num">${money.format(row.resource_brl)}</td><td class="num">${voteFormat(row.electoral_value)}</td><td class="num">${row.records}</td></tr>`,
+            `<tr class="${row.municipality_id === selection.mun ? "highlighted" : ""}"><td><button class="text-button" data-municipality="${escape(row.municipality_id)}">${escape(row.municipality)}</button></td><td class="num">${xFormat(row.comparison_value, options)}</td><td class="num">${yFormat(row.electoral_value, options)}</td><td class="num">${isCensus ? row.census_year + (options.metric === "amendments" ? " / " + row.records : "") : row.records}</td></tr>`,
         )
         .join("") ||
       '<tr><td colspan="4" class="empty">Sem pares municipais elegíveis.</td></tr>';
@@ -371,7 +479,13 @@
       "municipality_id",
       "municipality",
       "resource_brl",
+      "comparison_value",
       "electoral_value",
+      "census_year",
+      "ibge_id",
+      "census_indicator",
+      "census_source",
+      "amendment_measure",
       "votes",
       "registered",
       "records",
@@ -387,10 +501,26 @@
     const rows = comparison.map((row) => ({
       ...row,
       election: options.year,
-      exercise_start: options.start,
-      exercise_end: options.end,
+      exercise_start:
+        !options.censusIndicator || options.metric === "amendments"
+          ? options.start
+          : null,
+      exercise_end:
+        !options.censusIndicator || options.metric === "amendments"
+          ? options.end
+          : null,
       measure: options.measure,
       electoral_metric: options.metric,
+      census_indicator: options.censusIndicator,
+      census_source: options.censusIndicator
+        ? data.census.indicators[options.censusIndicator].sources[
+            A.censusYear(data.census, options.year)
+          ]
+        : null,
+      amendment_measure:
+        options.censusIndicator && options.metric === "amendments"
+          ? options.amendmentMeasure
+          : null,
     }));
     const text =
       "\ufeff" +
@@ -442,6 +572,7 @@
       "#resourceStart",
       "#resourceEnd",
       "#resourceLog",
+      "#censusResourceMeasure",
     ].forEach((id) => $(id).addEventListener("change", renderCorrelation));
     $("#exportComparison").addEventListener("click", exportComparison);
   }
@@ -450,20 +581,40 @@
     data = snapshot;
     selection = filters;
     amendmentPage = 0;
-    if (currentPerson !== selection.person) {
+    const reference = A.censusYear(data.census, selection.year);
+    if (currentPerson !== selection.person || currentCensusYear !== reference) {
       const old = $("#resourceMeasure").value;
       const measures = [
         selection.person === "enrico" ? "committed_brl" : "allocated_brl",
         "paid_in_period_brl",
       ];
-      $("#resourceMeasure").innerHTML = measures
+      const resourceOptions = measures
         .map(
           (measure) =>
             `<option value="${measure}">${resourceLabels[measure]}</option>`,
         )
         .join("");
-      if (measures.includes(old)) $("#resourceMeasure").value = old;
+      $("#resourceMeasure").innerHTML =
+        '<optgroup label="Emendas">' +
+        resourceOptions +
+        '</optgroup><optgroup label="Censo ' +
+        reference +
+        '">' +
+        Object.entries(data.census.indicators)
+          .map(
+            ([key, meta]) =>
+              `<option value="census:${key}">${escape(meta.label)}</option>`,
+          )
+          .join("") +
+        "</optgroup>";
+      if ([...$("#resourceMeasure").options].some((o) => o.value === old))
+        $("#resourceMeasure").value = old;
+      const oldAmendment = $("#censusResourceMeasure").value;
+      $("#censusResourceMeasure").innerHTML = resourceOptions;
+      if (measures.includes(oldAmendment))
+        $("#censusResourceMeasure").value = oldAmendment;
       currentPerson = selection.person;
+      currentCensusYear = reference;
     }
     renderAmendments();
     renderCorrelation();
