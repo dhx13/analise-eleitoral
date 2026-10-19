@@ -1,5 +1,13 @@
 # Alterações
 
+## 0.3.0
+
+- Importa os Censos 2010 e 2022 do IBGE/SIDRA: nove indicadores nos 645 municípios de SP e estatísticas estaduais oficiais.
+- Associa 2018 ao Censo 2010 e 2022/2026 ao Censo 2022; preserva ano, unidade, fonte, denominadores e ausência de dados.
+- Integra perfil, mapa temático, relatório, comparação com votos ou emendas e CSVs com códigos das duas instituições.
+- Versiona 13 respostas oficiais compactadas e metadados, com SHA-256 e atualização explícita em Python.
+- Acrescenta testes de integridade censitária, reconciliação estadual, referência temporal e cruzamento por código IBGE.
+
 ## 0.2.0
 
 - Seções da página inicial podem ser recolhidas individualmente ou em conjunto. O navegador guarda a escolha; selecionar um município no mapa abre o detalhamento eleitoral.
