@@ -1,3 +1,6 @@
 * text=auto eol=lf
 *.gz binary
 *.zip binary
+# Snapshots e publicação são reconstruídos pelo Python; o diff fica recolhido.
+data/census/** linguist-generated=true
+docs/index.html linguist-generated=true
