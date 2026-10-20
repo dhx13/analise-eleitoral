@@ -1,0 +1,74 @@
+[
+  {
+    "year": 2018,
+    "kind": "detail",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2018.zip",
+    "member": "detalhe_votacao_munzona_2018_SP.csv",
+    "file": "detail_2018.csv.gz",
+    "rows": 1560,
+    "slice_sha256": "194dd988094f202e8ab5fadd1587ad24b4319a753e0e83f6a04d115f531eecb9",
+    "archive_sha256": "df68c258a2261dff37b379f65ea5f2e8de7b3d824bb2340d8f4830274a3fabb5",
+    "downloaded_at": "2026-10-20T12:56:28.781009+00:00",
+    "filter": "SP; turno 1; eleições e cargos das candidaturas; nominal restrito aos candidatos do projeto"
+  },
+  {
+    "year": 2018,
+    "kind": "nominal",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2018.zip",
+    "member": "votacao_candidato_munzona_2018_SP.csv",
+    "file": "nominal_2018.csv.gz",
+    "rows": 1560,
+    "slice_sha256": "303966768f19a90b3d37613f5853c8c7d4a648c2c150d740f38ffaf5f0743b76",
+    "archive_sha256": "99f610ff05baaa7fbbaa46a66fb5fe25904db09857b27bc89ab0435f7a3a4297",
+    "downloaded_at": "2026-10-20T12:57:22.416055+00:00",
+    "filter": "SP; turno 1; eleições e cargos das candidaturas; nominal restrito aos candidatos do projeto"
+  },
+  {
+    "year": 2022,
+    "kind": "detail",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2022.zip",
+    "member": "detalhe_votacao_munzona_2022_SP.csv",
+    "file": "detail_2022.csv.gz",
+    "rows": 780,
+    "slice_sha256": "dc2551b19a38d84a634d1ef881fb1fd2ac85272cc72c464ae9c9b618f618444e",
+    "archive_sha256": "402c9983670e012c187caaee01fb751400e61573a61439c56a03acd8cb3ce993",
+    "downloaded_at": "2026-10-20T12:57:22.541344+00:00",
+    "filter": "SP; turno 1; eleições e cargos das candidaturas; nominal restrito aos candidatos do projeto"
+  },
+  {
+    "year": 2022,
+    "kind": "nominal",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2022.zip",
+    "member": "votacao_candidato_munzona_2022_SP.csv",
+    "file": "nominal_2022.csv.gz",
+    "rows": 1560,
+    "slice_sha256": "6466a8f95b41ee1b39a13712f720a57123a84cae4addf8592a965fe9244eaf8a",
+    "archive_sha256": "22995b4c128e398a7eb73959bc30f947d37c000bcd21688b01e4fbbe4c0d89ab",
+    "downloaded_at": "2026-10-20T12:58:14.115222+00:00",
+    "filter": "SP; turno 1; eleições e cargos das candidaturas; nominal restrito aos candidatos do projeto"
+  },
+  {
+    "year": 2026,
+    "kind": "detail",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2026.zip",
+    "member": "detalhe_votacao_munzona_2026_SP.csv",
+    "file": "detail_2026.csv.gz",
+    "rows": 1558,
+    "slice_sha256": "e3986d22f612e31359d1b81802bf63a92da7cbd7dc1b8283fcc3f0d967ad8340",
+    "archive_sha256": "a8734f83dcdcfbae600dd09892c37a8074185b1b5b8dbb46015881932f74dbf7",
+    "downloaded_at": "2026-10-20T12:58:14.299133+00:00",
+    "filter": "SP; turno 1; eleições e cargos das candidaturas; nominal restrito aos candidatos do projeto"
+  },
+  {
+    "year": 2026,
+    "kind": "nominal",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip",
+    "member": "votacao_candidato_munzona_2026_SP.csv",
+    "file": "nominal_2026.csv.gz",
+    "rows": 1558,
+    "slice_sha256": "4483bd338e42e1bd9590470ac4a63c62aff7190ecdcaafd6a7ff3dfafa2dd42a",
+    "archive_sha256": "d0487b5fa69831709b3b6746071ea4d1c474587858c89032d5e805b1d0783a92",
+    "downloaded_at": "2026-10-20T12:58:52.785275+00:00",
+    "filter": "SP; turno 1; eleições e cargos das candidaturas; nominal restrito aos candidatos do projeto"
+  }
+]
