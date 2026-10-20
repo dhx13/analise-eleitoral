@@ -17,6 +17,98 @@ const census = {
   ],
 };
 
+test("distribuição municipal preserva zero, separa UF e trata empates e ausências", () => {
+  const d = A.censusDistribution(census, 2022, "income", "3500002");
+  assert.equal(d.n, 2);
+  assert.equal(d.missing, 1);
+  assert.equal(d.median, 10);
+  assert.equal(d.official, 180);
+  assert.equal(d.selected, 0);
+  assert.equal(d.below, 0);
+  assert.equal(d.equal, 1);
+  assert.equal(
+    d.bins.reduce((n, b) => n + b.count, 0),
+    2,
+  );
+  assert.equal(d.bins[0].selected, true);
+  assert.equal(d.bins.at(-1).count, 1);
+  assert.equal(
+    A.censusDistribution(census, 2022, "income", "3500003").selected,
+    null,
+  );
+  const constant = {
+    ...census,
+    rows: [1, 2].map((id) => ({
+      census_year: 2022,
+      ibge_id: String(id),
+      income: 5,
+    })),
+  };
+  const same = A.censusDistribution(constant, 2022, "income", "1");
+  assert.equal(same.bins.length, 1);
+  assert.equal(same.bins[0].count, 2);
+  assert.equal(same.equal, 2);
+  assert.equal(A.censusDistribution(census, 2022, "unknown"), null);
+});
+
+test("ficha eleitoral usa numeradores próprios, razão de somas e nunca presume denominador", () => {
+  const rows = [
+    {
+      year: 2022,
+      person: "example",
+      municipality_id: "1",
+      nominal_votes: 10,
+      valid_nominal_votes: 8,
+      valid_votes: 80,
+      electorate: 200,
+    },
+    {
+      year: 2022,
+      person: "example",
+      municipality_id: "2",
+      nominal_votes: 30,
+      valid_nominal_votes: 20,
+      valid_votes: 120,
+      electorate: 300,
+    },
+  ];
+  const all = A.descriptiveVotes(
+    { rows },
+    { year: 2022, person: "example", mun: "" },
+  );
+  assert.equal(all.validShare, 14);
+  assert.equal(all.electorateShare, 8);
+  const one = A.descriptiveVotes(
+    { rows },
+    { year: 2022, person: "example", mun: "1" },
+  );
+  assert.equal(one.validShare, 10);
+  assert.equal(one.electorateShare, 5);
+  assert.equal(
+    A.descriptiveVotes({ rows }, { year: 2018, person: "example" }),
+    null,
+  );
+  const zero = {
+    rows: [
+      {
+        ...rows[0],
+        nominal_votes: 0,
+        valid_nominal_votes: 0,
+        valid_votes: 0,
+        electorate: 0,
+      },
+    ],
+  };
+  assert.equal(
+    A.descriptiveVotes(zero, { year: 2022, person: "example" }).validShare,
+    null,
+  );
+  assert.equal(
+    A.descriptiveVotes(zero, { year: 2022, person: "example" }).electorateShare,
+    null,
+  );
+});
+
 test("censo segue a eleição e o dado de 2026 mantém referência em 2022", () => {
   assert.equal(A.censusYear(census, 2018), 2010);
   assert.equal(A.censusYear(census, 2022), 2022);

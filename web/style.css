@@ -995,6 +995,109 @@ footer strong {
   font-weight: 700;
   margin-top: 16px;
 }
+.census-card-context {
+  border-top: 1px solid var(--line, #dce2df);
+  margin-top: 12px;
+  padding-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.electoral-facts {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.electoral-facts article {
+  min-width: 0;
+}
+.electoral-facts small {
+  line-height: 1.6;
+}
+.electoral-facts strong {
+  font-size: 25px;
+}
+.primary-vote,
+.electoral-facts article:first-child {
+  border-top: 3px solid #1a7355;
+}
+.census-distribution {
+  margin: 22px 0;
+  padding: 20px;
+  background: #f5f8f6;
+  border-radius: 10px;
+}
+.census-reference {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.census-reference strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 21px;
+  color: var(--ink, #19312b);
+}
+.census-histogram {
+  margin: 24px 0 12px;
+}
+.census-bars {
+  height: 190px;
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+  padding-top: 28px;
+}
+.census-bin {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  text-align: center;
+}
+.census-bin i {
+  display: block;
+  height: var(--bar-height);
+  min-height: 1px;
+  background: #b4cec2;
+  border-radius: 4px 4px 0 0;
+}
+.census-bin.selected i {
+  background: #1a7355;
+  outline: 2px solid #1a7355;
+}
+.census-bin span {
+  font-size: 11px;
+}
+.census-bin small {
+  font-size: 10px;
+  margin-top: 6px;
+}
+.census-bin:focus-visible {
+  outline: 2px solid #1a7355;
+  outline-offset: 3px;
+}
+.census-histogram figcaption {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+@media (max-width: 600px) {
+  .electoral-facts,
+  .census-reference {
+    grid-template-columns: 1fr;
+  }
+  .census-distribution {
+    padding: 12px;
+  }
+  .census-bars {
+    gap: 3px;
+  }
+}
 .census-definitions dd {
   margin: 6px 0 14px;
   line-height: 1.7;

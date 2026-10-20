@@ -14,6 +14,7 @@ import pandas as pd
 from .sources import ROOT, YEARS, acquire
 from .correlation import municipal_resources
 from .census import build_census
+from .denominators import enrich_dashboard
 
 PEOPLE = {
     "enrico": "ENRICO VAN BLARCUM DE GRAAFF MISASI",
@@ -218,13 +219,14 @@ def build():
         if set(crosswalk) != expected or len(set(crosswalk.values())) != len(crosswalk):
             raise ValueError("Correspondência TSE–IBGE incompleta ou com colisões; revisar antes de gerar o mapa")
     census = build_census(crosswalk)
-    dump(dist / "data" / "dashboard.json", {"title": "Território do voto", "people": people, "summary": summary,
+    dashboard = {"title": "Território do voto", "people": people, "summary": summary,
          "audits": audits, "amendments": amendments, "crosswalk": crosswalk,
          "census": census,
          "municipal_resources": municipal_resources(summary, amendments, municipality_name),
          "amendment_coverage": "Base federal importada: empenhos por localidade e pagamentos mensais por favorecido. Base estadual parcial: demonstrativos impositivos de 2020–2022, sem datas de pagamento; 2019 e revisão integral pendentes. Valores autorizados originais ainda não obtidos na esfera federal.",
          "denominator": "Votos registrados para o cargo, incluindo brancos e nulos; não são votos válidos.",
-         "scope": {"years": list(YEARS), "amendments": [2019, 2022], "uf": "SP"}})
+         "scope": {"years": list(YEARS), "amendments": [2019, 2022], "uf": "SP"}}
+    dump(dist / "data" / "dashboard.json", enrich_dashboard(dashboard, root=ROOT))
     for name, rows in [("votos_municipios", summary), ("emendas", amendments), ("censos_municipios", census["rows"])]:
         if rows:
             with (dist / "data" / f"{name}.csv").open("w", encoding="utf-8-sig", newline="") as stream:

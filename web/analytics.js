@@ -168,6 +168,84 @@
     );
   }
 
+  // Estatísticas apenas dos indicadores municipais do IBGE, sem ponderação.
+  function censusDistribution(census, election, indicator, ibge = null) {
+    const reference = censusYear(census, election);
+    const rows = census.rows.filter((r) => r.census_year === reference);
+    const values = rows
+      .map((r) => r[indicator])
+      .filter(Number.isFinite)
+      .sort((a, b) => a - b);
+    if (!values.length) return null;
+    const n = values.length,
+      min = values[0],
+      max = values[n - 1];
+    const median =
+      n % 2 ? values[(n - 1) / 2] : (values[n / 2 - 1] + values[n / 2]) / 2;
+    const selected = rows.find((r) => r.ibge_id === ibge)?.[indicator];
+    const count = min === max ? 1 : 10;
+    const index = (v) =>
+      min === max
+        ? 0
+        : Math.min(count - 1, Math.floor(((v - min) / (max - min)) * count));
+    const bins = Array.from({ length: count }, (_, i) => ({
+      low: min + ((max - min) * i) / count,
+      high: min + ((max - min) * (i + 1)) / count,
+      count: 0,
+      selected: Number.isFinite(selected) && index(selected) === i,
+    }));
+    values.forEach((v) => bins[index(v)].count++);
+    const official = censusProfile(census, election)?.[indicator];
+    return {
+      n,
+      missing: rows.length - n,
+      min,
+      max,
+      median,
+      bins,
+      official: Number.isFinite(official) ? official : null,
+      selected: Number.isFinite(selected) ? selected : null,
+      below: Number.isFinite(selected)
+        ? values.filter((v) => v < selected).length
+        : null,
+      equal: Number.isFinite(selected)
+        ? values.filter((v) => v === selected).length
+        : null,
+    };
+  }
+
+  // Ficha de um único recorte; denominadores e numeradores têm conceitos distintos.
+  function descriptiveVotes(denominators, filters) {
+    const rows =
+      denominators?.rows.filter(
+        (r) =>
+          r.year === filters.year &&
+          r.person === filters.person &&
+          (!filters.mun || r.municipality_id === filters.mun),
+      ) || [];
+    if (!rows.length) return null;
+    const total = (key) =>
+      rows.every((r) => Number.isFinite(r[key]))
+        ? rows.reduce((s, r) => s + r[key], 0)
+        : null;
+    const votes = total("nominal_votes"),
+      validNominal = total("valid_nominal_votes"),
+      valid = total("valid_votes"),
+      electorate = total("electorate");
+    return {
+      votes,
+      validNominal,
+      valid,
+      electorate,
+      validShare:
+        valid > 0 && validNominal !== null
+          ? (100 * validNominal) / valid
+          : null,
+      electorateShare:
+        electorate > 0 && votes !== null ? (100 * votes) / electorate : null,
+    };
+  }
+
   function censusComparisonRows(
     summary,
     resources,
@@ -232,6 +310,8 @@
     comparisonRows,
     censusYear,
     censusProfile,
+    censusDistribution,
+    descriptiveVotes,
     censusComparisonRows,
   };
 });

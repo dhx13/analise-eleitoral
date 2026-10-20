@@ -7,6 +7,7 @@ import zipfile
 import tomllib
 from pathlib import Path
 from .sources import ROOT
+from .denominators import enrich_dashboard
 
 
 def package(github_pages=False, create_archive=True, from_snapshot=False):
@@ -29,6 +30,8 @@ def package(github_pages=False, create_archive=True, from_snapshot=False):
         for file in (dist / "data/sections").glob("*/*.json"):
             key = file.parent.name + "/" + file.stem
             sections[key] = base64.b64encode(gzip.compress(file.read_bytes(), mtime=0)).decode("ascii")
+    if (ROOT / "data/electoral/sources.json").exists():
+        enrich_dashboard(data, root=ROOT)
     html = (assets / "index.html").read_text(encoding="utf-8")
     css = (assets / "style.css").read_text(encoding="utf-8")
     # Dados são JSON escapado. Endereços e demais textos nunca viram código.
