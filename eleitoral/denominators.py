@@ -49,9 +49,9 @@ def prepare_sources(people):
                 archive_hash = hashlib.file_digest(stream, "sha256").hexdigest()
             sources.append({"year": year, "kind": kind, "url": src["url"], "member": member,
                             "file": filename, "rows": len(rows), "slice_sha256": hashlib.sha256(raw).hexdigest(),
-                            "archive_sha256": archive_hash, "downloaded_at": datetime.now(timezone.utc).isoformat(),
+                            "archive_sha256": archive_hash, "extracted_at": datetime.now(timezone.utc).isoformat(),
                             "filter": "SP; turno 1; eleições e cargos das candidaturas; nominal restrito aos candidatos do projeto"})
-    (target / "sources.json").write_text(json.dumps(sources, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (target / "sources.json").write_text(json.dumps(sources, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     return sources
 
 
