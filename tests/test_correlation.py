@@ -1,5 +1,7 @@
 """Limites do cruzamento: município, esfera, ausência e parcelas de pagamento."""
 import json
+import re
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -94,6 +96,21 @@ class SnapshotTests(unittest.TestCase):
             self.assertIn('<\\/script>', output)
             self.assertEqual(output, (root / 'preview.html').read_text(encoding='utf-8'))
             self.assertIsNone(result['archive'])
+            # A publicação recompõe a interface sem dist/ nem fontes brutas.
+            web = root / 'web'
+            web.mkdir()
+            for name in ['index.html', 'style.css', *scripts]:
+                shutil.copyfile(dist / name, web / name)
+            (web / 'app.js').write_text('/* marker:app.js */\n/* interface atual */', encoding='utf-8')
+            self.assertTrue(dist.resolve().is_relative_to(temporary_root.resolve()))
+            shutil.rmtree(dist)
+            with patch.object(packaging, 'ROOT', root):
+                packaging.package(github_pages=True, create_archive=False, from_snapshot=True)
+            rebuilt = (root / 'docs/index.html').read_text(encoding='utf-8')
+            self.assertIn('/* interface atual */', rebuilt)
+            pattern = r'<script id="embedded-data" type="application/json">(.*?)</script>'
+            self.assertEqual(re.search(pattern, output).group(1), re.search(pattern, rebuilt).group(1))
+            self.assertIn('download="censos_municipios.csv"', rebuilt)
 
 
 if __name__ == '__main__':
