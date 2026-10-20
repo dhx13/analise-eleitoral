@@ -83,6 +83,11 @@
             <span class="panel-state" aria-hidden="true"></span>
           </summary>
           <div class="panel-body metrics">
+            <article class="primary-vote">
+              <span>Percentual nos votos válidos do cargo</span
+              ><strong id="share">—</strong
+              ><small id="shareNote">Denominador oficial do TSE</small>
+            </article>
             <article>
               <span>Votos nominais</span><strong id="votes">—</strong
               ><small id="votesNote">No recorte selecionado</small>
@@ -97,8 +102,9 @@
               ><small>Inclui seções em que recebeu zero voto</small>
             </article>
             <article>
-              <span>Participação no cargo</span><strong id="share">—</strong
-              ><small>Sobre votos registrados, incluindo brancos e nulos</small>
+              <span>Percentual sobre eleitores aptos</span
+              ><strong id="electorateShare">—</strong
+              ><small id="electorateNote">Eleitorado apto oficial do TSE</small>
             </article>
           </div>
         </details>
@@ -168,6 +174,11 @@
               <p id="censusContext" class="context" role="status"></p>
               <span id="censusTag" class="pill"></span>
             </div>
+            <div id="electoralFacts"></div>
+            <button id="exportElectoralFacts" class="secondary">
+              Baixar ficha eleitoral CSV
+            </button>
+            <h3>Ficha socioeconômica · todos os indicadores</h3>
             <div id="censusMetrics" class="metrics census-metrics"></div>
             <p class="note">
               O perfil municipal descreve residentes e domicílios, não
@@ -177,19 +188,28 @@
             </p>
             <div class="sort-controls">
               <label for="censusSort"
-                >Indicador da tabela<select id="censusSort"></select></label
+                >Indicador da distribuição e da tabela<select
+                  id="censusSort"
+                ></select></label
               ><label for="censusDirection"
                 >Ordenação dos municípios<select id="censusDirection">
                   <option value="desc">Decrescente</option>
                   <option value="asc">Crescente</option>
                 </select></label
               ><button id="exportCensus" class="secondary">
-                Baixar perfil censitário CSV
+                Baixar tabela censitária CSV
               </button>
             </div>
+            <div
+              id="censusDistribution"
+              class="census-distribution"
+              aria-live="polite"
+            ></div>
             <p class="muted">
-              A tabela segue o município selecionado no painel. Limpe o filtro
-              municipal para comparar todo o estado.
+              A distribuição e a tabela mantêm os municípios de todo o estado. A
+              seleção destaca a cidade na distribuição e atualiza a ficha; não
+              reduz a base estadual. O CSV contém todos os indicadores e
+              municípios.
             </p>
             <div class="tablewrap">
               <table>

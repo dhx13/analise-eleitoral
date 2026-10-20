@@ -225,11 +225,23 @@ async function render() {
     rows.filter((r) => r.votes > 0).length,
   );
   $("#sections").textContent = nf.format(sum(rows, "sections"));
-  $("#share").textContent = registered
-    ? ((100 * v) / registered).toLocaleString("pt-BR", {
-        maximumFractionDigits: 2,
-      }) + "%"
-    : "Sem denominador";
+  const facts = ElectoralAnalytics.descriptiveVotes(D.electoral_denominators, {
+    year,
+    person,
+    mun,
+  });
+  const percentText = (value) =>
+    value === null || value === undefined
+      ? "Não disponível"
+      : value.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + "%";
+  $("#share").textContent = percentText(facts?.validShare);
+  $("#shareNote").textContent = facts
+    ? `${nf.format(facts.validNominal)} votos nominais válidos / ${nf.format(facts.valid)} votos válidos do cargo`
+    : "Denominador oficial não incorporado";
+  $("#electorateShare").textContent = percentText(facts?.electorateShare);
+  $("#electorateNote").textContent = facts
+    ? `${nf.format(facts.votes)} votos nominais / ${nf.format(facts.electorate)} eleitores aptos`
+    : "Eleitorado apto não incorporado";
   $("#votesNote").textContent = mun
     ? (rows[0]?.municipality ?? "Município selecionado")
     : `São Paulo · ${year}`;
@@ -374,7 +386,7 @@ function renderReport(year, person, mun) {
   const available =
     D.audits.find((a) => a.year === year)?.status === "importado";
   $("#reportContent").innerHTML =
-    `<h3>${esc(c?.name)} · ${year}</h3><p>Recorte: <strong>${esc(mun ? rows[0]?.municipality : "estado de São Paulo")}</strong>. Cargo: ${esc(c?.office)}. Partido na eleição: ${esc(c?.party)}.</p>${available ? `<div class="insight">Foram registrados <strong>${nf.format(now)} votos nominais</strong> para o candidato no recorte. No estado, as cinco maiores votações municipais reuniram <strong>${topShare.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</strong> de seus votos.</div><h3>Distribuição no estado</h3><table><thead><tr><th>Município</th><th class="num">Votos</th><th class="num">% dos votos do candidato em SP</th></tr></thead><tbody>${top.map((r) => `<tr><td>${esc(r.municipality)}</td><td class="num">${nf.format(r.votes)}</td><td class="num">${((100 * r.votes) / total).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%</td></tr>`).join("")}</tbody></table>` : '<p class="notice">A votação deste ano ainda não foi importada.</p>'}<h3>Comparação temporal</h3>${previous && D.audits.find((a) => a.year === previous)?.status === "importado" ? `<p>Em ${previous}, o candidato recebeu ${nf.format(before)} votos no mesmo recorte municipal; em ${year}, ${nf.format(now)}. ${before ? "A variação nominal foi de " + ((now / before - 1) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%." : "Não se calcula variação percentual sobre uma base de zero."}</p>${prev?.office_id !== c?.office_id ? '<p class="notice">Houve mudança de cargo. Esta variação não representa uma comparação direta de desempenho para o mesmo cargo.</p>' : ""}` : "<p>Não há eleição anterior importada para calcular a variação neste recorte.</p>"}${CensusPanel.report(D, { year, mun })}<h3>Como interpretar as emendas</h3><p>${esc(D.amendment_coverage)} A destinação estadual, o empenho federal e o pagamento comprovado em 2019–2022 aparecem separados. Pagamentos federais são filtrados por competência mensal. Um status estadual posterior não comprova execução no período.</p><h3>Limites desta leitura</h3><p>Os indicadores são descritivos. Comparações entre seções de anos diferentes exigem uma conferência de continuidade. Os dados não permitem inferir escolhas individuais, bairros de residência ou efeito causal das emendas sobre os votos.</p><p class="muted">Fonte dos cálculos: arquivo oficial do TSE por seção. Reconciliação de totais: consulte Fontes e método.</p>`;
+    `<h3>${esc(c?.name)} · ${year}</h3><p>Recorte: <strong>${esc(mun ? rows[0]?.municipality : "estado de São Paulo")}</strong>. Cargo: ${esc(c?.office)}. Partido na eleição: ${esc(c?.party)}.</p>${available ? `<div class="insight">Foram registrados <strong>${nf.format(now)} votos nominais</strong> para o candidato no recorte. No estado, as cinco maiores votações municipais reuniram <strong>${topShare.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</strong> de seus votos.</div><h3>Distribuição no estado</h3><table><thead><tr><th>Município</th><th class="num">Votos</th><th class="num">% dos votos do candidato em SP</th></tr></thead><tbody>${top.map((r) => `<tr><td>${esc(r.municipality)}</td><td class="num">${nf.format(r.votes)}</td><td class="num">${((100 * r.votes) / total).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%</td></tr>`).join("")}</tbody></table>` : '<p class="notice">A votação deste ano ainda não foi importada.</p>'}<h3>Comparação temporal</h3>${previous && D.audits.find((a) => a.year === previous)?.status === "importado" ? `<p>Em ${previous}, o candidato recebeu ${nf.format(before)} votos no mesmo recorte municipal; em ${year}, ${nf.format(now)}. ${before ? "A variação nominal foi de " + ((now / before - 1) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%." : "Não se calcula variação percentual sobre uma base de zero."}</p>${prev?.office_id !== c?.office_id ? '<p class="notice">Houve mudança de cargo. Esta variação não representa uma comparação direta de desempenho para o mesmo cargo.</p>' : ""}` : "<p>Não há eleição anterior importada para calcular a variação neste recorte.</p>"}${CensusPanel.electoralFacts(D, { year, person, mun })}${CensusPanel.report(D, { year, mun })}<h3>Como interpretar as emendas</h3><p>${esc(D.amendment_coverage)} A destinação estadual, o empenho federal e o pagamento comprovado em 2019–2022 aparecem separados. Pagamentos federais são filtrados por competência mensal. Um status estadual posterior não comprova execução no período.</p><h3>Limites desta leitura</h3><p>Os indicadores são descritivos. Comparações entre seções de anos diferentes exigem uma conferência de continuidade. Os dados não permitem inferir escolhas individuais, bairros de residência ou efeito causal das emendas sobre os votos.</p><p class="muted">Fonte dos cálculos: arquivo oficial do TSE por seção. Reconciliação de totais: consulte Fontes e método.</p>`;
 }
 function audit() {
   const checked = D.audits
