@@ -89,7 +89,7 @@
           )
           .join(
             "",
-          )}</dl><ul>${denominators.sources.map((s) => `<li><a href="${escape(s.url)}">TSE · ${s.year} · ${s.kind === "detail" ? "apuração municipal/zona" : "votação nominal municipal/zona"}</a> · recorte versionado com SHA-256; consulta em ${escape(s.downloaded_at.slice(0, 10))}.</li>`).join("")}</ul>`
+          )}</dl><ul>${denominators.sources.map((s) => `<li><a href="${escape(s.url)}">TSE · ${s.year} · ${s.kind === "detail" ? "apuração municipal/zona" : "votação nominal municipal/zona"}</a> · recorte versionado com SHA-256; extração em ${escape(s.extracted_at.slice(0, 10))}.</li>`).join("")}</ul>`
       : "";
     return `${electoral}<h3>Censos demográficos do IBGE</h3>${census.coverage.map((c) => `<div class="auditrow"><div><strong>Censo ${c.year}</strong><small>${c.municipalities} de ${c.expected} municípios de SP. Indicadores com ao menos um município ausente: ${Object.values(c.missing_by_indicator).filter((n) => n > 0).length}.</small></div><span>${c.year === 2010 ? "Eleição 2018" : "Eleições 2022 e 2026"}</span></div>`).join("")}<p>Ligação pelo código IBGE municipal de sete dígitos, a partir da correspondência TSE–IBGE validada. Os recortes municipais e o estadual foram consultados separadamente. Os valores estaduais são oficiais: não são médias simples das taxas ou medianas dos municípios.</p><dl class="census-definitions">${Object.entries(
       census.indicators,
