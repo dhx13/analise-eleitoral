@@ -1,5 +1,12 @@
 # Alterações
 
+## 0.3.1
+
+- Fichas descritivas com percentual nos votos válidos como principal e percentual sobre eleitores aptos como complemento, sempre com numerador, denominador e fonte.
+- Seis recortes oficiais do TSE versionados, SHA-256 e reconciliação dos 3.870 registros municipais; votos válidos nominais e de legenda tratados separadamente.
+- Perfil dos nove indicadores do IBGE com referência oficial de SP e mediana municipal, também no relatório.
+- Histograma por indicador, seleção municipal destacada e base estadual preservada na tabela e nos CSVs.
+
 ## 0.3.0
 
 - Importa os Censos 2010 e 2022 do IBGE/SIDRA: nove indicadores nos 645 municípios de SP e estatísticas estaduais oficiais.

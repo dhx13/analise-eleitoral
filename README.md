@@ -129,3 +129,9 @@ Crie uma branch a partir de `main`, mantenha alterações relacionadas em commit
 Os módulos `web/analytics.js` (funções puras), `web/features.js` (ordenação e comparação) e `web/panels.js` (recolhimento) têm responsabilidades separadas. A agregação de recursos é feita em `eleitoral/correlation.py`. O código da interface foi formatado com Prettier 3.9.10. `.editorconfig` e `.gitattributes` padronizam codificação e finais de linha.
 
 Para gerar apenas a página de publicação, sem produzir outro ZIP: `python -m eleitoral.package --github-pages --no-archive`. A versão gerada em `docs/index.html` deve acompanhar as alterações de código no pull request. Os ZIPs brutos do TSE continuam fora do Git; os pequenos recortes oficiais do SIDRA são versionados para reconstrução sem rede.
+
+## Fichas municipais e contexto (0.3.1)
+
+A ficha usa o percentual nos votos válidos do cargo como medida principal e o percentual sobre eleitores aptos como complemento. Os dois exibem seus numeradores, denominadores e fontes oficiais; há CSV próprio. Consulte [DENOMINADORES.md](docs/DENOMINADORES.md). Para reconstruir os recortes do TSE a partir do cache oficial, execute `python -m eleitoral.denominators`. O build completo e o modo `--from-snapshot` validam e incorporam os recortes versionados sem nova coleta.
+
+Os nove indicadores censitários mostram o dado oficial de SP e a mediana municipal. A distribuição usa um histograma por indicador. O município selecionado atualiza a ficha e destaca seu intervalo; a tabela, distribuição e CSV censitário mantêm a base estadual. O relatório inclui os nove indicadores e as duas referências.
