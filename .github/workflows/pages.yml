@@ -16,6 +16,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Recompor interface com os dados do snapshot
+        run: python -m eleitoral.package --from-snapshot --github-pages --no-archive
       - name: Conferir exportação revisada
         run: test -f docs/index.html && test -f docs/.nojekyll
       - uses: actions/configure-pages@v5

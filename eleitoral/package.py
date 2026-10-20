@@ -9,16 +9,28 @@ from pathlib import Path
 from .sources import ROOT
 
 
-def package(github_pages=False, create_archive=True):
+def package(github_pages=False, create_archive=True, from_snapshot=False):
     dist = ROOT / "dist"
-    html = (dist / "index.html").read_text(encoding="utf-8")
-    data = json.loads((dist / "data/dashboard.json").read_text(encoding="utf-8"))
-    geo = json.loads((dist / "data/municipalities.geojson").read_text(encoding="utf-8"))
-    sections = {}
-    for file in (dist / "data/sections").glob("*/*.json"):
-        key = file.parent.name + "/" + file.stem
-        sections[key] = base64.b64encode(gzip.compress(file.read_bytes(), mtime=0)).decode("ascii")
-    css = (dist / "style.css").read_text(encoding="utf-8")
+    assets = ROOT / "web" if from_snapshot else dist
+    downloads = {}
+    if from_snapshot:
+        snapshot = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        match = re.search(r'<script id="embedded-data" type="application/json">(.*?)</script>', snapshot, re.S)
+        if not match:
+            raise ValueError("Snapshot sem os dados incorporados; gerar a exportação completa primeiro")
+        payload = json.loads(match.group(1))
+        data, geo, sections = payload["data"], payload["geo"], payload["sections"]
+        downloads = {name: href for href, name in re.findall(
+            r'href="(data:text/csv;base64,[^"]+)"\s+download="([^"]+)"', snapshot)}
+    else:
+        data = json.loads((dist / "data/dashboard.json").read_text(encoding="utf-8"))
+        geo = json.loads((dist / "data/municipalities.geojson").read_text(encoding="utf-8"))
+        sections = {}
+        for file in (dist / "data/sections").glob("*/*.json"):
+            key = file.parent.name + "/" + file.stem
+            sections[key] = base64.b64encode(gzip.compress(file.read_bytes(), mtime=0)).decode("ascii")
+    html = (assets / "index.html").read_text(encoding="utf-8")
+    css = (assets / "style.css").read_text(encoding="utf-8")
     # Dados são JSON escapado. Endereços e demais textos nunca viram código.
     inline = json.dumps({"data": data, "geo": geo, "sections": sections}, ensure_ascii=False, separators=(",", ":"), allow_nan=False).replace("</", "<\\/")
     boot = f'<script id="embedded-data" type="application/json">{inline}</script><script>var payload=JSON.parse(document.getElementById("embedded-data").textContent);window.SNAPSHOT=payload.data;window.INLINE_GEO=payload.geo;window.INLINE_SECTIONS=payload.sections;</script>'
@@ -27,24 +39,23 @@ def package(github_pages=False, create_archive=True):
     # Preserva a ordem dos módulos e torna todos os scripts locais independentes.
     scripts = re.findall(r'<script src="([\w-]+\.js)"></script>', html)
     for index, name in enumerate(scripts):
-        javascript = (dist / name).read_text(encoding="utf-8")
+        javascript = (assets / name).read_text(encoding="utf-8")
         html = html.replace(f'<script src="{name}"></script>',
                             (boot if index == 0 else "") + '<script>' + javascript + '</script>')
     # Exportação municipal também funciona ao abrir o HTML diretamente.
-    municipal = (dist / "data/votos_municipios.csv").read_bytes()
-    href = "data:text/csv;base64," + base64.b64encode(municipal).decode("ascii")
-    html = re.sub(r'href="data/votos_municipios\.csv"\s+download(?:="")?',
-                  lambda match: 'href="' + href + '" download="votos_municipios.csv"', html)
-    emendas = dist / "data/emendas.csv"
-    if emendas.exists():
-        href = "data:text/csv;base64," + base64.b64encode(emendas.read_bytes()).decode("ascii")
-        html = re.sub(r'href="data/emendas\.csv"\s+download(?:="")?',
-                      lambda match: 'href="' + href + '" download="emendas.csv"', html)
-    census = dist / "data/censos_municipios.csv"
-    if census.exists():
-        href = "data:text/csv;base64," + base64.b64encode(census.read_bytes()).decode("ascii")
-        html = re.sub(r'href="data/censos_municipios\.csv"\s+download(?:="")?',
-                      lambda match: 'href="' + href + '" download="censos_municipios.csv"', html)
+    for name in ("votos_municipios", "emendas", "censos_municipios"):
+        pattern = rf'href="data/{name}\.csv"\s+download(?:="")?'
+        if from_snapshot:
+            href = downloads.get(name + ".csv")
+            if href is None and re.search(pattern, html):
+                raise ValueError("Download ausente no snapshot: " + name)
+        else:
+            csv = dist / "data" / (name + ".csv")
+            if name == "votos_municipios" and not csv.exists():
+                raise FileNotFoundError(csv)
+            href = "data:text/csv;base64," + base64.b64encode(csv.read_bytes()).decode("ascii") if csv.exists() else None
+        if href:
+            html = re.sub(pattern, lambda match: f'href="{href}" download="{name}.csv"', html)
     preview = ROOT / "preview.html"
     preview.write_text(html, encoding="utf-8", newline="\n")
     if github_pages:
@@ -80,8 +91,10 @@ if __name__ == "__main__":
     parser.add_argument("--archive-only", action="store_true", help="Empacotar arquivos já gerados")
     parser.add_argument("--github-pages", action="store_true", help="Exportar painel completo para docs/index.html")
     parser.add_argument("--no-archive", action="store_true", help="Gerar os HTMLs sem criar outro ZIP")
+    parser.add_argument("--from-snapshot", action="store_true", help="Recompor a interface atual com os dados e downloads já incorporados em docs/index.html")
     args = parser.parse_args()
     if args.archive_only:
         print(json.dumps({"archive": str(archive_project())}, ensure_ascii=False))
     else:
-        print(json.dumps(package(github_pages=args.github_pages, create_archive=not args.no_archive), ensure_ascii=False))
+        print(json.dumps(package(github_pages=args.github_pages, create_archive=not args.no_archive,
+                                 from_snapshot=args.from_snapshot), ensure_ascii=False))

@@ -101,10 +101,16 @@ A conferência lê a exportação por município e zona e compara os 645 municí
 
 1. Repositório: https://github.com/dhx13/analise-eleitoral.
 2. Na configuração de Pages, selecione **GitHub Actions** como origem.
-3. Execute manualmente o workflow **Publicar GitHub Pages**. Ele publica a pasta `docs/` incluída no repositório. Não baixa gigabytes de dados a cada publicação.
+3. Execute manualmente o workflow **Publicar GitHub Pages**. Ele recompõe a interface de `web/` com os dados incorporados no snapshot de `docs/index.html` e publica a pasta `docs/`. Não baixa gigabytes de dados a cada publicação.
 4. Para atualizar os dados, rode a coleta e o processamento localmente, gere `dist/` e execute `python -m eleitoral.package --github-pages`. Envie `docs/index.html` e os arquivos de código ou dados alterados; execute novamente o workflow.
 
 `dist/` e `preview.html` são exportações locais. A publicação usa `docs/index.html`, que contém o mapa, as três eleições e todos os detalhes por seção. A versão compactada evita manter milhares de arquivos de seções no histórico do Git. É necessário um navegador atual com suporte a `DecompressionStream` para abrir os detalhes.
+
+Para mudanças apenas na interface, envie os arquivos de `web/` e execute o workflow; a montagem usa os dados e CSVs já versionados no snapshot, preservando os 1.935 blocos de seções. Não é necessário reenviar a página grande nem reconstruir `dist/`. A montagem usa apenas a biblioteca padrão do Python. Para gerar a mesma prévia local:
+
+```sh
+python -m eleitoral.package --from-snapshot --no-archive
+```
 
 ## Validação
 
