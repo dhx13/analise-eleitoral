@@ -54,4 +54,12 @@ Uma associação municipal não permite concluir que indivíduos com determinada
 
 ## Atualização
 
+### Ficha e distribuição municipal
+
+A ficha reúne os nove indicadores para o município selecionado (ou a UF, quando nenhum é selecionado), com o valor oficial de SP e a mediana dos valores municipais como referências distintas. Cada município tem o mesmo peso no cálculo da mediana, inclusive para população e renda. A mediana dos valores municipais de renda mediana não é a mediana estadual da renda das pessoas; a estatística estadual continua sendo consultada diretamente no IBGE.
+
+A exploração por indicador mantém todos os municípios do censo de referência. A seleção de uma cidade apenas destaca seu intervalo e sua linha, sem reduzir a base do histograma, da tabela ou do CSV censitário. O histograma usa dez intervalos de mesma largura na escala original; o último inclui o máximo, e valores constantes usam um só intervalo. Ausências não entram nas contagens, zero entra normalmente. Cada barra conta municípios, sem ponderação populacional. Valores extremos podem deixar várias barras vazias; a nota da interface explicita essa característica. As faixas não são perfis de eleitores.
+
+As [fichas eleitorais e seus denominadores](DENOMINADORES.md) têm fontes e CSV próprios. Estatísticas do IBGE não são atribuídas a indivíduos ou a seções.
+
 `python -m eleitoral coletar-censos` atualiza explicitamente as consultas do manifesto. `python -m eleitoral site` recompõe os indicadores a partir dos recortes versionados e valida a ligação com o TSE. `python -m eleitoral.package --github-pages --no-archive` gera a publicação independente, incluindo o novo módulo e os downloads. A hospedagem não consulta a API do IBGE em tempo real.
